@@ -1,0 +1,27 @@
+plugins {
+    id 'groovy'
+}
+
+group 'io.micronaut.configuration'
+version projectVersion
+
+repositories {
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.micronaut:micronaut-bom:$micronautVersion"
+    }
+}
+
+dependencies {
+    annotationProcessor 'io.micronaut:micronaut-inject-java'
+    compile 'io.micronaut:micronaut-inject'
+    compile "com.datastax.cassandra:cassandra-driver-core:$cassandraDriverVersion"
+    testCompile 'io.micronaut:micronaut-inject-groovy'
+    testCompile("org.spockframework:spock-core:$spockVersion") {
+        exclude module: 'groovy-all'
+    }
+}
