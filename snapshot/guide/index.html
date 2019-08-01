@@ -105,9 +105,6 @@
 <div class="paragraph">
 <p>The <code>micronaut-cassandra</code> module includes support for integrating Micronaut services with Cassandra.</p>
 </div>
-<div class="paragraph">
-<p>See <a href="https://docs.micronaut.io/latest/guide/index.html#cassandraSupport">Configuring Cassandra</a> docs details.</p>
-</div>
 
 
 <h1 id="setup">2 Setting up Cassandra</h1>
@@ -119,22 +116,84 @@
 </div>
 
 
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Using the CLI</div>
+<div class="paragraph">
+<p>If you are creating your project using the Micronaut CLI, supply the <code>cassandra</code> feature to include Cassandra configuration in your project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>$ mn create-app my-app --features cassandra</pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To enable the Cassandra configuration, add the following dependency to your application:</p>
+</div>
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut:micronaut-cassandra:1.2.0.BUILD-SNAPSHOT'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-cassandra:1.2.0.BUILD-SNAPSHOT'</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut&lt;/groupId&gt;
+    &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-cassandra&lt;/artifactId&gt;
     &lt;version&gt;1.2.0.BUILD-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
 </p>
+</div>
+<div class="paragraph">
+<p>Micronaut supports Cassandra configuration by using the <a href="https://docs.datastax.com/en/developer/java-driver/">Datastax Java Driver</a>.
+Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
+<a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html">Cluster.Builder</a> (without the prefix).
+Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.html">Cluster</a> bean. This bean
+can be then injected into any other Micronaut bean.</p>
+</div>
+<div class="listingblock">
+<div class="title">Supply Single Configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
+applicationContext.environment.addPropertySource(MapPropertySource.of(
+        'test',
+        ['cassandra.default.clusterName': "ociCluster",
+         'cassandra.default.contactPoint': "localhost",
+         'cassandra.default.port': 9042,
+         'cassandra.default.maxSchemaAgreementWaitSeconds': 20,
+         'cassandra.default.ssl': true]
+))
+applicationContext.start()</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Multiple Cluster instances can be configured as follows:</p>
+</div>
+<div class="listingblock">
+<div class="title">Supply Multiple Configuration</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
+applicationContext.environment.addPropertySource(MapPropertySource.of(
+        'test',
+        ['cassandra.default.contactPoint': "localhost",
+         'cassandra.default.port': 9042,
+         'cassandra.secondary.contactPoint': "127.0.0.2",
+         'cassandra.secondary.port': 9043]
+))
+applicationContext.start()</code></pre>
+</div>
 </div>
 
     </div>
