@@ -19,7 +19,9 @@ dependencyManagement {
 dependencies {
     annotationProcessor 'io.micronaut:micronaut-inject-java'
     compile 'io.micronaut:micronaut-inject'
-    compile "com.datastax.cassandra:cassandra-driver-core:3.1.0"
+//    compile "com.datastax.cassandra:cassandra-driver-core:3.1.0"
+    compile "com.datastax.oss:java-driver-core:4.4.0"
+    compile "com.datastax.oss:java-driver-mapper-processor:4.4.0"
     testCompile 'io.micronaut:micronaut-inject-groovy'
     testCompile("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
