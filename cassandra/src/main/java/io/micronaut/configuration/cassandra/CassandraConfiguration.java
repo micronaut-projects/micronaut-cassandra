@@ -31,18 +31,19 @@ import io.micronaut.context.annotation.Parameter;
 @EachProperty(value = CassandraConfiguration.PREFIX, primary = "default")
 public class CassandraConfiguration {
     public static final String PREFIX = "cassandra.datasource";
-    private String name;
+    private final String name;
 
-    public CassandraConfiguration(@Parameter String name){
+    /**
+     * @param name The provider name
+     */
+    public CassandraConfiguration(@Parameter String name) {
         this.name = name;
     }
 
+    /**
+     * @return The provider name
+     */
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }

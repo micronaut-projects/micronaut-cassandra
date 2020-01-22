@@ -55,8 +55,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * uses default value if default value if not present in {@link PropertyResolver}
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Uses default value if default value if not present in {@link PropertyResolver}.
      *
      * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
      * @param option         driver option from cassandra driver
@@ -66,8 +66,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * ignore property if not present in {@link PropertyResolver}
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Ignore property if not present in {@link PropertyResolver}.
      *
      * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
      * @param option         driver option from cassandra driver
@@ -78,8 +78,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * maps int to duration by milliseconds with default value if not present in {@link PropertyResolver}
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Maps int to duration by milliseconds with default value if not present in {@link PropertyResolver}.
      *
      * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
      * @param option         driver option from cassandra driver
@@ -90,8 +90,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * maps int to duration by milliseconds
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Maps int to duration by milliseconds.
      *
      * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
      * @param option         driver option from cassandra driver
@@ -102,8 +102,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * maps int to duration by nanoseconds with default value if not present in {@link PropertyResolver}
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Maps int to duration by nanoseconds with default value if not present in {@link PropertyResolver}.
      *
      * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
      * @param option         driver option from cassandra driver
@@ -115,8 +115,8 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
-     * maps int to duration by nanoseconds
+     * Inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type.
+     * Maps int to duration by nanoseconds.
      */
     private void putDurationNanoSeconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option) {
         Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
@@ -290,7 +290,7 @@ public class CassandraSessionFactory implements AutoCloseable {
     }
 
     /**
-     * closes all active {@link CqlSession}
+     * closes all active {@link CqlSession}.
      */
     @Override
     @PreDestroy
