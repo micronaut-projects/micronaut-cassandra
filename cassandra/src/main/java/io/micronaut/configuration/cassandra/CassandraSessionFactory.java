@@ -19,6 +19,8 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
+import com.datastax.oss.driver.internal.core.metadata.DefaultEndPoint;
+import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableList;
 import com.typesafe.config.ConfigFactory;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.EachBean;
@@ -28,8 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,7 +101,7 @@ public class CassandraSessionFactory implements AutoCloseable{
                 Map<String, Object> configurations = new HashMap<>(DefaultDriverOption.values().length);
 
                 String prefix = configuration.getName();
-                putConfiguration(configurations,prefix,DefaultDriverOption.CONTACT_POINTS,List.class,List.of("127.0.0.1:9042", "127.0.0.2:9042"));
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONTACT_POINTS,List.class,Arrays.asList("127.0.0.1:9042", "127.0.0.2:9042"));
                 putConfiguration(configurations,prefix,DefaultDriverOption.SESSION_NAME,String.class);
                 putConfiguration(configurations,prefix,DefaultDriverOption.SESSION_KEYSPACE,String.class);
                 putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONFIG_RELOAD_INTERVAL,0);
@@ -158,13 +162,13 @@ public class CassandraSessionFactory implements AutoCloseable{
                 putConfiguration(configurations,prefix,DefaultDriverOption.ADDRESS_TRANSLATOR_CLASS,String.class, "PassThroughAddressTranslator");
                 putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_VERSION,String.class);
                 putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_COMPRESSION,String.class);
-                putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_MAX_FRAME_LENGTH,int.class, 256);
+                putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_MAX_FRAME_LENGTH,int.class, 256000000);
                 putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_WARN_IF_SET_KEYSPACE,boolean.class,true);
                 putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_ATTEMPTS,int.class, 5);
                 putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_INTERVAL, 3);
                 putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_CONSISTENCY,String.class, "ONE");
-                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_ENABLED,List.class, List.of());
-                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_NODE_ENABLED,List.class, List.of());
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_ENABLED,List.class, new ArrayList());
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_NODE_ENABLED,List.class, new ArrayList());
 
                 putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_HIGHEST,3000);
                 putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_DIGITS,int.class, 3);
@@ -192,7 +196,7 @@ public class CassandraSessionFactory implements AutoCloseable{
                 putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT,2000);
 
                 putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REQUEST_PAGE_SIZE,List.class);
-                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REFRESHED_KEYSPACES,List.class, List.of(""));
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REFRESHED_KEYSPACES,List.class, new ArrayList());
                 putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_WINDOW,1000);
                 putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_MAX_EVENTS,int.class, 20);
                 putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_TOKEN_MAP_ENABLED,Boolean.class, true);
@@ -238,7 +242,9 @@ public class CassandraSessionFactory implements AutoCloseable{
     @EachBean(CqlSessionBuilder.class)
     @Bean(preDestroy = "close")
     public CqlSession cassandraCluster(CqlSessionBuilder builder) {
-        return builder.build();
+        CqlSession session = builder.build();
+        this.sessions.add(session);
+        return session;
     }
 
     @Override

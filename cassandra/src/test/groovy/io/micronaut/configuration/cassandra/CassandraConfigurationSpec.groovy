@@ -16,10 +16,13 @@
 package io.micronaut.configuration.cassandra
 
 import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.loadbalancing.LoadBalancingPolicy
 import com.datastax.oss.driver.api.core.metadata.Node
+import com.datastax.oss.driver.internal.core.loadbalancing.DefaultLoadBalancingPolicy
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.DefaultApplicationContext
 import io.micronaut.context.env.MapPropertySource
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import spock.lang.Specification
 
 class CassandraConfigurationSpec extends Specification {
@@ -39,33 +42,30 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test single cluster connection"() {
         given:
-        // tag::single[]
+        EmbeddedCassandraServerHelper.startEmbeddedCassandra();
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.datasource.default.basic.contact-points': ["localhost:9042"]]
+                ['cassandra.datasource.default.basic.contact-points': ["localhost:9142"],
+                'cassandra.datasource.default.advanced.metadata.schema.enabled': false,
+                'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
         ))
         applicationContext.start()
-        // end::single[]
 
         expect:
-//        !applicationContext.getBean(ClusterBuilderListener).invoked
         applicationContext.containsBean(CassandraConfiguration)
         applicationContext.containsBean(CqlSession)
 
         when:
         CqlSession session = applicationContext.getBean(CqlSession)
-//        applicationContext.getBean(ClusterBuilderListener).invoked
-        List<Node> inetSocketAddresses = session.metadata.getNodes().values()
+        Collection<Node> inetSocketAddresses = session.metadata.getNodes().values()
+        Collection<LoadBalancingPolicy> policies = session.getContext().loadBalancingPolicies.values()
 
         then:
-        cluster.getClusterName() == "ociCluster"
-        inetSocketAddresses[0].getBroadcastAddress().get().hostName == "localhost"
-        inetSocketAddresses[0].getBroadcastAddress().get().port == 9042
-//        cluster.getConfiguration().getProtocolOptions().getMaxSchemaAgreementWaitSeconds() == 20
-//        cluster.getConfiguration().getProtocolOptions().getSSLOptions() != null
+        ((DefaultLoadBalancingPolicy)policies[0]).getLocalDatacenter().get() == "ociCluster"
 
-        cleanup:
+        then:
+        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
         applicationContext.close()
     }
 
