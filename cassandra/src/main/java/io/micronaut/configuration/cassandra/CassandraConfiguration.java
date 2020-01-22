@@ -25,6 +25,7 @@ import io.micronaut.context.annotation.Parameter;
  * used to denote the primary cluster bean.
  *
  * @author Nirav Assar
+ * @author Michael Pollind
  * @since 1.0
  */
 @EachProperty(value = CassandraConfiguration.PREFIX, primary = "default")

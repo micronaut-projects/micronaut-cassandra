@@ -19,8 +19,6 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
-import com.datastax.oss.driver.internal.core.metadata.DefaultEndPoint;
-import com.datastax.oss.driver.shaded.guava.common.collect.ImmutableList;
 import com.typesafe.config.ConfigFactory;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.EachBean;
@@ -30,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +40,7 @@ import java.util.Optional;
  * Creates cassandra cluster for each configuration bean.
  *
  * @author Nirav Assar
+ * @author Michael Pollind
  * @since 1.0
  */
 @Factory
@@ -56,36 +54,81 @@ public class CassandraSessionFactory implements AutoCloseable {
         this.resolver = applicationContext;
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * uses default value if default value if not present in {@link PropertyResolver}
+     *
+     * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
+     * @param option         driver option from cassandra driver
+     */
     private <T> void putConfiguration(Map<String, Object> configurations, String prefix, DefaultDriverOption option, Class<T> requiredType, T defaultValue) {
         configurations.put(option.getPath(), this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), requiredType, defaultValue));
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * ignore property if not present in {@link PropertyResolver}
+     *
+     * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
+     * @param option         driver option from cassandra driver
+     */
     private <T> void putConfiguration(Map<String, Object> configurations, String prefix, DefaultDriverOption option, Class<T> requiredType) {
         Optional<T> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), requiredType);
         value.ifPresent(t -> configurations.put(option.getPath(), t));
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * maps int to duration by milliseconds with default value if not present in {@link PropertyResolver}
+     *
+     * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
+     * @param option         driver option from cassandra driver
+     */
     private void putDurationMilliseconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option, int defaultValue) {
         Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
         configurations.put(option.getPath(), Duration.ofMillis(value.orElse(defaultValue)));
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * maps int to duration by milliseconds
+     *
+     * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
+     * @param option         driver option from cassandra driver
+     */
     private void putDurationMilliseconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option) {
         Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
         value.ifPresent(t -> configurations.put(option.getPath(), Duration.ofMillis(t)));
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * maps int to duration by nanoseconds with default value if not present in {@link PropertyResolver}
+     *
+     * @param configurations map of paths from {@link com.typesafe.config.Config} to values to use in cassandra driver
+     * @param option         driver option from cassandra driver
+     */
     private void putDurationNanoSeconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option, int defaultValue) {
 
         Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
         configurations.put(option.getPath(), Duration.ofNanos(value.orElse(defaultValue)));
     }
 
+    /**
+     * inserts configuration from application context into {@link com.typesafe.config.Config} mapping path from cassandra.datasource.* to {@link DefaultDriverOption} path by type
+     * maps int to duration by nanoseconds
+     */
     private void putDurationNanoSeconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option) {
         Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
         value.ifPresent(t -> configurations.put(option.getPath(), Duration.ofNanos(t)));
     }
 
+    /**
+     * Creates the {@link CqlSessionBuilder} bean for the given configuration.
+     *
+     * @param configuration The cassandra configuration bean
+     * @return A {@link CqlSession} bean
+     */
     @EachBean(CassandraConfiguration.class)
     public CqlSessionBuilder session(CassandraConfiguration configuration) {
 
@@ -230,9 +273,14 @@ public class CassandraSessionFactory implements AutoCloseable {
             throw e;
         }
 
-//        return  builder;
     }
 
+    /**
+     * Creates the {@link CqlSession} bean for the given configuration.
+     *
+     * @param builder The {@link CqlSessionBuilder}
+     * @return A {@link CqlSession} bean
+     */
     @EachBean(CqlSessionBuilder.class)
     @Bean(preDestroy = "close")
     public CqlSession cassandraCluster(CqlSessionBuilder builder) {
@@ -241,6 +289,9 @@ public class CassandraSessionFactory implements AutoCloseable {
         return session;
     }
 
+    /**
+     * closes all active {@link CqlSession}
+     */
     @Override
     @PreDestroy
     public void close() {
