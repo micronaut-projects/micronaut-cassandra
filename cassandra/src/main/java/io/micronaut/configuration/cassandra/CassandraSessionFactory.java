@@ -46,12 +46,16 @@ import java.util.Optional;
 @Factory
 public class CassandraSessionFactory implements AutoCloseable {
 
-    private List<CqlSession> sessions = new ArrayList<>(2);
     private static final Logger LOG = LoggerFactory.getLogger(CassandraSessionFactory.class);
+    private List<CqlSession> sessions = new ArrayList<>(2);
     private PropertyResolver resolver;
 
-    public CassandraSessionFactory(PropertyResolver applicationContext) {
-        this.resolver = applicationContext;
+    /**
+     * Default constructor.
+     * @param propertyResolver Property resolve for application configurations
+     */
+    public CassandraSessionFactory(PropertyResolver propertyResolver) {
+        this.resolver = propertyResolver;
     }
 
     /**
