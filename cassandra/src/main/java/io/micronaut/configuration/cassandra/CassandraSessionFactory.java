@@ -19,23 +19,21 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.micronaut.context.annotation.Bean;
-import io.micronaut.context.annotation.Context;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.core.value.PropertyResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
-import java.util.AbstractMap;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 /**
  * Creates cassandra cluster for each configuration bean.
@@ -48,150 +46,185 @@ public class CassandraSessionFactory implements AutoCloseable{
 
     private List<CqlSession> sessions = new ArrayList<>(2);
     private static final Logger LOG = LoggerFactory.getLogger(CassandraSessionFactory.class);
+    private PropertyResolver resolver;
 
-    public CassandraSessionFactory(){
-
+    public CassandraSessionFactory(PropertyResolver applicationContext){
+        this.resolver = applicationContext;
     }
+
+    private <T>void putConfiguration(Map<String, Object> configurations,String prefix,DefaultDriverOption option,Class<T> requiredType, T defaultValue) {
+        configurations.put(option.getPath(),this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(),requiredType,defaultValue));
+    }
+
+    private <T>void putConfiguration(Map<String, Object> configurations,String prefix,DefaultDriverOption option,Class<T> requiredType) {
+        Optional<T> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), requiredType);
+        value.ifPresent(t -> configurations.put(option.getPath(), t));
+    }
+
+    private void putDurationMilliseconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option, int defaultValue) {
+        Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
+        configurations.put(option.getPath(), Duration.ofMillis(value.orElse(defaultValue)));
+    }
+
+    private void putDurationMilliseconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option) {
+        Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
+        value.ifPresent(t -> configurations.put(option.getPath(),Duration.ofMillis(t)));
+    }
+
+    private void putDurationNanoSeconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option, int defaultValue) {
+
+        Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
+        configurations.put(option.getPath(), Duration.ofNanos(value.orElse(defaultValue)));
+    }
+
+    private void putDurationNanoSeconds(Map<String, Object> configurations, String prefix, DefaultDriverOption option) {
+        Optional<Integer> value = this.resolver.getProperty(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath(), int.class);
+        value.ifPresent(t -> configurations.put(option.getPath(),Duration.ofNanos(t)));
+    }
+
+
+    private boolean isPropertySet(String prefix, DefaultDriverOption option){
+        return this.resolver.containsProperties(CassandraConfiguration.PREFIX + "." + prefix + "." + option.getPath());
+    }
+
 
     @EachBean(CassandraConfiguration.class)
     public CqlSessionBuilder session(CassandraConfiguration configuration) {
 
         try {
             CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
-                Map<String, Object> entires = new HashMap<>(DefaultDriverOption.values().length);
-                entires.put(DefaultDriverOption.CONTACT_POINTS.getPath(), configuration.getContactPoints());
-                entires.put(DefaultDriverOption.SESSION_NAME.getPath(), configuration.getName());
-                entires.put(DefaultDriverOption.SESSION_KEYSPACE.getPath(), configuration.getKeyspace());
-                entires.put(DefaultDriverOption.CONFIG_RELOAD_INTERVAL.getPath(), 0);
-                // ---------------------------------------------------------------------------------
-                CassandraConfiguration.RequestConfigurationProperties requestConfigurationProperties = configuration.getRequest();
-                entires.put(DefaultDriverOption.REQUEST_TIMEOUT.getPath(), requestConfigurationProperties.getTimeout());
-                entires.put(DefaultDriverOption.REQUEST_CONSISTENCY.getPath(), requestConfigurationProperties.getConsistency());
-                entires.put(DefaultDriverOption.REQUEST_PAGE_SIZE.getPath(), requestConfigurationProperties.getPageSize());
-                entires.put(DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY.getPath(), requestConfigurationProperties.getConsistencyLevel());
-                entires.put(DefaultDriverOption.REQUEST_DEFAULT_IDEMPOTENCE.getPath(), requestConfigurationProperties.isDefaultIdempotency());
-                // ---------------------------------------------------------------------------------
-//                entires.put(DefaultDriverOption.LOAD_BALANCING_POLICY.getPath(), null);
-                CassandraConfiguration.LoadBalancerPolicyProperties loadBalancerPolicyProperties = configuration.getLoadBalancerPolicy();
-                entires.put(DefaultDriverOption.LOAD_BALANCING_POLICY_CLASS.getPath(), loadBalancerPolicyProperties.getPolicyClass());
-                entires.put(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER.getPath(), loadBalancerPolicyProperties.getLocalDatacenter());
-                entires.put(DefaultDriverOption.LOAD_BALANCING_FILTER_CLASS.getPath(), loadBalancerPolicyProperties.getFilterClass());
-                // ---------------------------------------------------------------------------------
-                entires.put(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_SET_KEYSPACE_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_MAX_REQUESTS.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_MAX_ORPHAN_REQUESTS.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_WARN_INIT_ERROR.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_POOL_LOCAL_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.RECONNECT_ON_INIT.getPath(), null);
-                entires.put(DefaultDriverOption.RECONNECTION_POLICY_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.RECONNECTION_BASE_DELAY.getPath(), null);
-                entires.put(DefaultDriverOption.RECONNECTION_MAX_DELAY.getPath(), null);
-//                entires.put(DefaultDriverOption.RETRY_POLICY.getPath(), null);
-                entires.put(DefaultDriverOption.RETRY_POLICY_CLASS.getPath(), null);
 
-//                entires.put(DefaultDriverOption.SPECULATIVE_EXECUTION_POLICY.getPath(), null);
-                // -------------- speculative-execution-policy -----------------------------------------
-                entires.put(DefaultDriverOption.SPECULATIVE_EXECUTION_POLICY_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.SPECULATIVE_EXECUTION_MAX.getPath(), null);
-                entires.put(DefaultDriverOption.SPECULATIVE_EXECUTION_DELAY.getPath(), null);
-                // -------------- speculative-execution-policy -----------------------------------------
-                entires.put(DefaultDriverOption.AUTH_PROVIDER_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.AUTH_PROVIDER_USER_NAME.getPath(), null);
-                entires.put(DefaultDriverOption.AUTH_PROVIDER_PASSWORD.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_ENGINE_FACTORY_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_CIPHER_SUITES.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_HOSTNAME_VALIDATION.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_KEYSTORE_PATH.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_KEYSTORE_PASSWORD.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_TRUSTSTORE_PATH.getPath(), null);
-                entires.put(DefaultDriverOption.SSL_TRUSTSTORE_PASSWORD.getPath(), null);
-                entires.put(DefaultDriverOption.TIMESTAMP_GENERATOR_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.TIMESTAMP_GENERATOR_FORCE_JAVA_CLOCK.getPath(), null);
-                entires.put(DefaultDriverOption.TIMESTAMP_GENERATOR_DRIFT_WARNING_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_TRACKER_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_SUCCESS_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_SLOW_THRESHOLD.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_SLOW_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_ERROR_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_VALUES.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOGGER_STACK_TRACES.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_THROTTLER_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_NODE_STATE_LISTENER_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_CHANGE_LISTENER_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.ADDRESS_TRANSLATOR_CLASS.getPath(), null);
-                entires.put(DefaultDriverOption.PROTOCOL_VERSION.getPath(), null);
-                entires.put(DefaultDriverOption.PROTOCOL_COMPRESSION.getPath(), null);
-                entires.put(DefaultDriverOption.PROTOCOL_MAX_FRAME_LENGTH.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_WARN_IF_SET_KEYSPACE.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_TRACE_ATTEMPTS.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_TRACE_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_TRACE_CONSISTENCY.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_NODE_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_HIGHEST.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_DIGITS.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_THROTTLING_HIGHEST.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_THROTTLING_DIGITS.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_SESSION_THROTTLING_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_HIGHEST.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_DIGITS.getPath(), null);
-                entires.put(DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_TCP_NODELAY.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_KEEP_ALIVE.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_REUSE_ADDRESS.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_LINGER_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_RECEIVE_BUFFER_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.SOCKET_SEND_BUFFER_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.HEARTBEAT_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.HEARTBEAT_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_TOPOLOGY_WINDOW.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_TOPOLOGY_MAX_EVENTS.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_REQUEST_PAGE_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_REFRESHED_KEYSPACES.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_WINDOW.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_SCHEMA_MAX_EVENTS.getPath(), null);
-                entires.put(DefaultDriverOption.METADATA_TOKEN_MAP_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_WARN.getPath(), null);
-                entires.put(DefaultDriverOption.PREPARE_ON_ALL_NODES.getPath(), null);
-                entires.put(DefaultDriverOption.REPREPARE_ENABLED.getPath(), null);
-                entires.put(DefaultDriverOption.REPREPARE_CHECK_SYSTEM_TABLE.getPath(), null);
-                entires.put(DefaultDriverOption.REPREPARE_MAX_STATEMENTS.getPath(), null);
-                entires.put(DefaultDriverOption.REPREPARE_MAX_PARALLELISM.getPath(), null);
-                entires.put(DefaultDriverOption.REPREPARE_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_IO_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_IO_SHUTDOWN_QUIET_PERIOD.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_IO_SHUTDOWN_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_IO_SHUTDOWN_UNIT.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_ADMIN_SIZE.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_QUIET_PERIOD.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_TIMEOUT.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_UNIT.getPath(), null);
-                entires.put(DefaultDriverOption.COALESCER_MAX_RUNS.getPath(), null);
-                entires.put(DefaultDriverOption.COALESCER_INTERVAL.getPath(), null);
-                entires.put(DefaultDriverOption.RESOLVE_CONTACT_POINTS.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_TIMER_TICK_DURATION.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_TIMER_TICKS_PER_WHEEL.getPath(), null);
-                entires.put(DefaultDriverOption.REQUEST_LOG_WARNINGS.getPath(), null);
-                entires.put(DefaultDriverOption.NETTY_DAEMON.getPath(), null);
-                // ---------------------------------------------------------------------------------
-                entires.put(DefaultDriverOption.CLOUD_SECURE_CONNECT_BUNDLE.getPath(), null);
-                entires.put(DefaultDriverOption.LOAD_BALANCING_POLICY_SLOW_AVOIDANCE.getPath(), null);
-                return ConfigFactory.parseMap(entires);
+                Map<String, Object> configurations = new HashMap<>(DefaultDriverOption.values().length);
+
+                String prefix = configuration.getName();
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONTACT_POINTS,List.class,List.of("127.0.0.1:9042", "127.0.0.2:9042"));
+                putConfiguration(configurations,prefix,DefaultDriverOption.SESSION_NAME,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SESSION_KEYSPACE,String.class);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONFIG_RELOAD_INTERVAL,0);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REQUEST_TIMEOUT, 2000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_CONSISTENCY,String.class, "LOCAL_ONE");
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_PAGE_SIZE,int.class, 5000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY,String.class, "SERIAL");
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_DEFAULT_IDEMPOTENCE,boolean.class, Boolean.FALSE);
+                putConfiguration(configurations,prefix,DefaultDriverOption.LOAD_BALANCING_POLICY_CLASS,String.class, "DefaultLoadBalancingPolicy");
+                putConfiguration(configurations,prefix,DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.LOAD_BALANCING_FILTER_CLASS,String.class);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT, 500);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONNECTION_SET_KEYSPACE_TIMEOUT,500);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONNECTION_MAX_REQUESTS,int.class,1024);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONNECTION_MAX_ORPHAN_REQUESTS,int.class,24576);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONNECTION_WARN_INIT_ERROR,boolean.class,true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONNECTION_POOL_LOCAL_SIZE,int.class, 1);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE,int.class, 1);
+                putConfiguration(configurations,prefix,DefaultDriverOption.RECONNECT_ON_INIT,Boolean.class, false);
+                putConfiguration(configurations,prefix,DefaultDriverOption.RECONNECTION_POLICY_CLASS,String.class, "ExponentialReconnectionPolicy");
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.RECONNECTION_BASE_DELAY, 1000);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.RECONNECTION_MAX_DELAY, 60000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.RETRY_POLICY_CLASS,String.class, "DefaultRetryPolicy");
+                putConfiguration(configurations,prefix,DefaultDriverOption.SPECULATIVE_EXECUTION_POLICY_CLASS,String.class, "NoSpeculativeExecutionPolicy");
+                putConfiguration(configurations,prefix,DefaultDriverOption.SPECULATIVE_EXECUTION_MAX,int.class,3);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.SPECULATIVE_EXECUTION_DELAY,100);
+                putConfiguration(configurations,prefix,DefaultDriverOption.AUTH_PROVIDER_CLASS,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.AUTH_PROVIDER_USER_NAME,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.AUTH_PROVIDER_PASSWORD,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_ENGINE_FACTORY_CLASS,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_CIPHER_SUITES,List.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_HOSTNAME_VALIDATION,boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_KEYSTORE_PATH,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_KEYSTORE_PASSWORD,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_TRUSTSTORE_PATH,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SSL_TRUSTSTORE_PASSWORD,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.TIMESTAMP_GENERATOR_CLASS,String.class, "AtomicTimestampGenerator");
+                putConfiguration(configurations,prefix,DefaultDriverOption.TIMESTAMP_GENERATOR_FORCE_JAVA_CLOCK,Boolean.class,false);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.TIMESTAMP_GENERATOR_DRIFT_WARNING_THRESHOLD,1000);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.TIMESTAMP_GENERATOR_DRIFT_WARNING_INTERVAL,10000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_TRACKER_CLASS,String.class, "NoopRequestTracker");
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_SUCCESS_ENABLED,Boolean.class);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_SLOW_THRESHOLD);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_SLOW_ENABLED,Boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_ERROR_ENABLED,Boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_MAX_QUERY_LENGTH,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_VALUES,Boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_MAX_VALUE_LENGTH,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_MAX_VALUES,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOGGER_STACK_TRACES,boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_THROTTLER_CLASS,String.class, "PassThroughRequestThrottler");
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE,int.class);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_NODE_STATE_LISTENER_CLASS,String.class, "NoopNodeStateListener");
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_CHANGE_LISTENER_CLASS,String.class, "NoopSchemaChangeListener");
+                putConfiguration(configurations,prefix,DefaultDriverOption.ADDRESS_TRANSLATOR_CLASS,String.class, "PassThroughAddressTranslator");
+                putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_VERSION,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_COMPRESSION,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.PROTOCOL_MAX_FRAME_LENGTH,int.class, 256);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_WARN_IF_SET_KEYSPACE,boolean.class,true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_ATTEMPTS,int.class, 5);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_INTERVAL, 3);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_TRACE_CONSISTENCY,String.class, "ONE");
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_ENABLED,List.class, List.of());
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_NODE_ENABLED,List.class, List.of());
+
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_HIGHEST,3000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_DIGITS,int.class, 3);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_SESSION_CQL_REQUESTS_INTERVAL, 300000);
+
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_SESSION_THROTTLING_HIGHEST, 3000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_SESSION_THROTTLING_DIGITS,int.class, 3);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_SESSION_THROTTLING_INTERVAL,300000);
+
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_HIGHEST,3000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_DIGITS,int.class, 3);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METRICS_NODE_CQL_MESSAGES_INTERVAL,300000);
+
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_TCP_NODELAY,Boolean.class, true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_KEEP_ALIVE,Boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_REUSE_ADDRESS,Boolean.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_LINGER_INTERVAL,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_RECEIVE_BUFFER_SIZE,int.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.SOCKET_SEND_BUFFER_SIZE,int.class);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.HEARTBEAT_INTERVAL,30000);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.HEARTBEAT_TIMEOUT,500);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METADATA_TOPOLOGY_WINDOW,1000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_TOPOLOGY_MAX_EVENTS,int.class, 20);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_ENABLED,boolean.class, true);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT,2000);
+
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REQUEST_PAGE_SIZE,List.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_REFRESHED_KEYSPACES,List.class, List.of(""));
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_WINDOW,1000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_SCHEMA_MAX_EVENTS,int.class, 20);
+                putConfiguration(configurations,prefix,DefaultDriverOption.METADATA_TOKEN_MAP_ENABLED,Boolean.class, true);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT,500);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_INTERVAL,200);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_TIMEOUT, 10000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CONTROL_CONNECTION_AGREEMENT_WARN,boolean.class, true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.PREPARE_ON_ALL_NODES,boolean.class, true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REPREPARE_ENABLED,boolean.class, true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REPREPARE_CHECK_SYSTEM_TABLE,boolean.class, false);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REPREPARE_MAX_STATEMENTS,int.class, 0);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REPREPARE_MAX_PARALLELISM,int.class, 100);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.REPREPARE_TIMEOUT, 500);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_IO_SIZE,int.class, 0);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_IO_SHUTDOWN_QUIET_PERIOD,int.class, 2);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_IO_SHUTDOWN_TIMEOUT,int.class, 15);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_IO_SHUTDOWN_UNIT,String.class, "SECONDS");
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_ADMIN_SIZE,int.class, 2);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_QUIET_PERIOD,int.class, 2);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_TIMEOUT,int.class, 15);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_ADMIN_SHUTDOWN_UNIT,String.class,"SECONDS");
+                putConfiguration(configurations,prefix,DefaultDriverOption.COALESCER_MAX_RUNS,int.class,5);
+                putDurationNanoSeconds(configurations,prefix,DefaultDriverOption.COALESCER_INTERVAL,10000);
+                putConfiguration(configurations,prefix,DefaultDriverOption.RESOLVE_CONTACT_POINTS,boolean.class, true);
+                putDurationMilliseconds(configurations,prefix,DefaultDriverOption.NETTY_TIMER_TICK_DURATION,1);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_TIMER_TICKS_PER_WHEEL,int.class, 2048);
+                putConfiguration(configurations,prefix,DefaultDriverOption.REQUEST_LOG_WARNINGS,boolean.class, true);
+                putConfiguration(configurations,prefix,DefaultDriverOption.NETTY_DAEMON,boolean.class, false);
+                putConfiguration(configurations,prefix,DefaultDriverOption.CLOUD_SECURE_CONNECT_BUNDLE,String.class);
+                putConfiguration(configurations,prefix,DefaultDriverOption.LOAD_BALANCING_POLICY_SLOW_AVOIDANCE,boolean.class,false);
+
+                return ConfigFactory.parseMap(configurations);
             }));
             return builder;
         } catch (Exception e) {

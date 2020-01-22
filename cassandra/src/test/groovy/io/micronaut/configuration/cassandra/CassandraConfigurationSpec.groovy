@@ -43,7 +43,7 @@ class CassandraConfigurationSpec extends Specification {
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.datasource.default.contact-points': ["localhost:9042"]]
+                ['cassandra.datasource.default.basic.contact-points': ["localhost:9042"]]
         ))
         applicationContext.start()
         // end::single[]
