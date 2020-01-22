@@ -16,14 +16,19 @@
 package io.micronaut.configuration.cassandra
 
 import com.datastax.oss.driver.api.core.CqlSession
+import com.datastax.oss.driver.api.core.CqlSessionBuilder
 import com.datastax.oss.driver.api.core.loadbalancing.LoadBalancingPolicy
-import com.datastax.oss.driver.api.core.metadata.Node
 import com.datastax.oss.driver.internal.core.loadbalancing.DefaultLoadBalancingPolicy
 import io.micronaut.context.ApplicationContext
 import io.micronaut.context.DefaultApplicationContext
 import io.micronaut.context.env.MapPropertySource
+import io.micronaut.context.event.BeanCreatedEvent
+import io.micronaut.context.event.BeanCreatedEventListener
+import io.micronaut.inject.qualifiers.Qualifiers
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import spock.lang.Specification
+
+import javax.inject.Singleton
 
 class CassandraConfigurationSpec extends Specification {
 
@@ -46,69 +51,69 @@ class CassandraConfigurationSpec extends Specification {
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.datasource.default.basic.contact-points': ["localhost:9142"],
-                'cassandra.datasource.default.advanced.metadata.schema.enabled': false,
-                'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
+                ['cassandra.datasource.default.basic.contact-points'                        : ["localhost:9142"],
+                 'cassandra.datasource.default.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
         ))
         applicationContext.start()
 
         expect:
+        !applicationContext.getBean(CqlSessionBuilderListener).invoked
         applicationContext.containsBean(CassandraConfiguration)
         applicationContext.containsBean(CqlSession)
 
         when:
         CqlSession session = applicationContext.getBean(CqlSession)
-        Collection<Node> inetSocketAddresses = session.metadata.getNodes().values()
+        applicationContext.getBean(CqlSessionBuilderListener).invoked
         Collection<LoadBalancingPolicy> policies = session.getContext().loadBalancingPolicies.values()
 
         then:
-        ((DefaultLoadBalancingPolicy)policies[0]).getLocalDatacenter().get() == "ociCluster"
+        ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter().get() == "ociCluster"
 
         then:
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
         applicationContext.close()
     }
 
-//    void "test multiple cluster connections"() {
-//        given:
-//        // tag::multiple[]
-//        ApplicationContext applicationContext = new DefaultApplicationContext("test")
-//        applicationContext.environment.addPropertySource(MapPropertySource.of(
-//                'test',
-//                ['cassandra.default.contactPoint': "localhost",
-//                 'cassandra.default.port': 9042,
-//                 'cassandra.secondary.contactPoint': "127.0.0.2",
-//                 'cassandra.secondary.port': 9043]
-//        ))
-//        applicationContext.start()
-//        // end::multiple[]
-//
-//        when:
-//        Cluster defaultCluster = applicationContext.getBean(Cluster)
-//        Cluster secondaryCluster = applicationContext.getBean(Cluster, Qualifiers.byName("secondary"))
-//        List<InetSocketAddress> defaultInetSocketAddresses = defaultCluster.manager.contactPoints
-//        List<InetSocketAddress> secondaryInetSocketAddresses = secondaryCluster.manager.contactPoints
-//
-//        then:
-//        defaultInetSocketAddresses[0].getHostName() == "localhost"
-//        defaultInetSocketAddresses[0].getPort() == 9042
-//
-//        secondaryInetSocketAddresses[0].getHostName() == "127.0.0.2"
-//        secondaryInetSocketAddresses[0].getPort() == 9043
-//
-//        cleanup:
-//        applicationContext.close()
-//    }
-//
-//    @Singleton
-//    static class ClusterBuilderListener implements BeanCreatedEventListener<Cluster.Builder> {
-//
-//        boolean invoked = false
-//        @Override
-//        Cluster.Builder onCreated(BeanCreatedEvent<Cluster.Builder> event) {
-//            def builder = event.getBean()
-//            invoked = builder != null
-//            return builder
-//        }
-//    }
+    void "test multiple cluster connections"() {
+        given:
+        EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        applicationContext.environment.addPropertySource(MapPropertySource.of(
+                'test',
+                ['cassandra.datasource.default.basic.contact-points'                          : "localhost:9142",
+                 'cassandra.datasource.default.advanced.metadata.schema.enabled'              : false,
+                 'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
+                 'cassandra.datasource.secondary.basic.contact-points'                        : "localhost:9142",
+                 'cassandra.datasource.secondary.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.datasource.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
+        ))
+        applicationContext.start()
+
+        when:
+        CqlSession defaultCluster = applicationContext.getBean(CqlSession)
+        CqlSession secondaryCluster = applicationContext.getBean(CqlSession, Qualifiers.byName("secondary"))
+        Collection<LoadBalancingPolicy> defaultPolicies = defaultCluster.getContext().loadBalancingPolicies.values()
+        Collection<LoadBalancingPolicy> secondaryPolicies = secondaryCluster.getContext().loadBalancingPolicies.values()
+
+        then:
+        ((DefaultLoadBalancingPolicy) defaultPolicies[0]).getLocalDatacenter().get() == "ociCluster"
+        ((DefaultLoadBalancingPolicy) secondaryPolicies[0]).getLocalDatacenter().get() == "ociCluster2"
+
+        cleanup:
+        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+        applicationContext.close()
+    }
+
+    @Singleton
+    static class CqlSessionBuilderListener implements BeanCreatedEventListener<CqlSessionBuilder> {
+        boolean invoked = false
+
+        @Override
+        CqlSessionBuilder onCreated(BeanCreatedEvent<CqlSessionBuilder> event) {
+            def builder = event.getBean()
+            invoked = builder != null
+            return builder
+        }
+    }
 }
