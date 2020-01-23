@@ -48,6 +48,7 @@ class CassandraConfigurationSpec extends Specification {
     void "test single cluster connection"() {
         given:
         EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
@@ -56,6 +57,7 @@ class CassandraConfigurationSpec extends Specification {
                  'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
         ))
         applicationContext.start()
+        // end::single[]
 
         expect:
         !applicationContext.getBean(CqlSessionBuilderListener).invoked
@@ -78,6 +80,7 @@ class CassandraConfigurationSpec extends Specification {
     void "test multiple cluster connections"() {
         given:
         EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        // tag::multiple[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
@@ -89,6 +92,7 @@ class CassandraConfigurationSpec extends Specification {
                  'cassandra.datasource.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
         ))
         applicationContext.start()
+        // end::multiple[]
 
         when:
         CqlSession defaultCluster = applicationContext.getBean(CqlSession)
