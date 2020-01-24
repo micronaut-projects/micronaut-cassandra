@@ -30,7 +30,7 @@ import io.micronaut.context.annotation.Parameter;
  */
 @EachProperty(value = CassandraConfiguration.PREFIX, primary = "default")
 public class CassandraConfiguration {
-    public static final String PREFIX = "cassandra.datasource";
+    public static final String PREFIX = "cassandra";
     private final String name;
 
     /**

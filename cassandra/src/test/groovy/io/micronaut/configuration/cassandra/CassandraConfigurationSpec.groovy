@@ -52,9 +52,9 @@ class CassandraConfigurationSpec extends Specification {
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.datasource.default.basic.contact-points'                        : ["localhost:9142"],
-                 'cassandra.datasource.default.advanced.metadata.schema.enabled'            : false,
-                 'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
+                ['cassandra.default.basic.contact-points'                        : ["localhost:9142"],
+                 'cassandra.default.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
         ))
         applicationContext.start()
         // end::single[]
@@ -84,12 +84,12 @@ class CassandraConfigurationSpec extends Specification {
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.datasource.default.basic.contact-points'                          : "localhost:9142",
-                 'cassandra.datasource.default.advanced.metadata.schema.enabled'              : false,
-                 'cassandra.datasource.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
-                 'cassandra.datasource.secondary.basic.contact-points'                        : "localhost:9142",
-                 'cassandra.datasource.secondary.advanced.metadata.schema.enabled'            : false,
-                 'cassandra.datasource.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
+                ['cassandra.default.basic.contact-points'                          : "localhost:9142",
+                 'cassandra.default.advanced.metadata.schema.enabled'              : false,
+                 'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
+                 'cassandra.secondary.basic.contact-points'                        : "localhost:9142",
+                 'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
         ))
         applicationContext.start()
         // end::multiple[]
