@@ -1,0 +1,12 @@
+== Release History
+
+=== 2.0.0
+
+* upgraded cassandra driver to 4.0.0 from 3.1.0
+
+==== Migrating from 1.X.X to 2.X.X
+
+- `cassandra.\*.contactPoint` and `cassandra.*.port` are passed to `cassandra.*.basic.contact-points` where contact-points is a list of strings in the format `<host>:<port>`
+- `cassandra.\*.MaxSchemaAgreementWaitSeconds` -> `cassandra.*.advanced.control-connection.schema-agreement.timeout`
+- `cassandra.\*.ssl` -> `cassandra.*.advanced.ssl-engine-factory = DefaultSslEngineFactory`
+- `cassandra.\*.clusterName` ->  `cassandra.*.basic.session-name`

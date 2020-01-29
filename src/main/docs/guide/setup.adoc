@@ -18,17 +18,48 @@ Micronaut will create a https://docs.datastax.com/en/drivers/java/4.4/com/datast
 can be then injected into any other Micronaut bean.
 
 .Supply Single Configuration
-[source,groovy]
+[source,yaml]
 ----
-include::cassandra/src/test/groovy/io/micronaut/configuration/cassandra/CassandraConfigurationSpec.groovy[tags=single, indent=0]
+cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "127.0.0.2:8042"
+      load-balancing-policy:
+        local-datacenter: datacenter1
 ----
+
 
 Multiple Cluster instances can be configured as follows:
 
 .Supply Multiple Configuration
-[source,groovy]
+[source,yaml]
 ----
-include::cassandra/src/test/groovy/io/micronaut/configuration/cassandra/CassandraConfigurationSpec.groovy[tags=multiple, indent=0]
+cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+  secondary:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9043"
+      load-balancing-policy:
+        local-datacenter: datacenter2
 ----
-
 
