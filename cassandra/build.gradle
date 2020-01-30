@@ -18,6 +18,8 @@ dependencyManagement {
 
 dependencies {
     annotationProcessor 'io.micronaut:micronaut-inject-java'
+    annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
+
     compile 'io.micronaut:micronaut-inject'
     compile "com.datastax.oss:java-driver-core:4.4.0"
     compile "com.datastax.oss:java-driver-mapper-processor:4.4.0"

@@ -84,10 +84,10 @@ class CassandraConfigurationSpec extends Specification {
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.default.basic.contact-points'                          : "localhost:9142",
+                ['cassandra.default.basic.contact-points'                          : ["localhost:9142"],
                  'cassandra.default.advanced.metadata.schema.enabled'              : false,
                  'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
-                 'cassandra.secondary.basic.contact-points'                        : "localhost:9142",
+                 'cassandra.secondary.basic.contact-points'                        : ["localhost:9142"],
                  'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
                  'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
         ))
