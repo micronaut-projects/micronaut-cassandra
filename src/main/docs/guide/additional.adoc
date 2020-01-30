@@ -1,7 +1,7 @@
 datastax is configured using https://github.com/lightbend/config[lightbend/config] under the field `datastax-java-driver.\*`. the equivalent bean is mapped under `cassandra.*.*`. fields provided under
 application.conf will act as fallback properties when building https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html[CqlSession].
 
-.datastax configuration under `lightbend/confg` - application.conf
+.datastax configuration under `lightbend/config` - application.conf
 [source,conf]
 ----
 datastax-java-driver {

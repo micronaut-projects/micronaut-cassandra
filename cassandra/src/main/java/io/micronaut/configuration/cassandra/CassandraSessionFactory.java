@@ -273,7 +273,7 @@ public class CassandraSessionFactory implements AutoCloseable {
             }));
             return builder;
         } catch (Exception e) {
-            LOG.error("Failed to insantiate CQL session: " + e.getMessage(), e);
+            LOG.error("Failed to instantiate CQL session: " + e.getMessage(), e);
             throw e;
         }
 
