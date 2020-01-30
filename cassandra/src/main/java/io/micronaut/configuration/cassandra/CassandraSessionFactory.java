@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,7 +144,7 @@ public class CassandraSessionFactory implements AutoCloseable {
                 putConfiguration(configurations, prefix, DefaultDriverOption.CONTACT_POINTS, List.class);
                 putConfiguration(configurations, prefix, DefaultDriverOption.SESSION_NAME, String.class);
                 putConfiguration(configurations, prefix, DefaultDriverOption.SESSION_KEYSPACE, String.class);
-                putDurationMilliseconds(configurations, prefix, DefaultDriverOption.CONFIG_RELOAD_INTERVAL,0); // disable configuration reloading
+                putDurationMilliseconds(configurations, prefix, DefaultDriverOption.CONFIG_RELOAD_INTERVAL, 0); // disable configuration reloading
                 putDurationMilliseconds(configurations, prefix, DefaultDriverOption.REQUEST_TIMEOUT);
                 putConfiguration(configurations, prefix, DefaultDriverOption.REQUEST_CONSISTENCY, String.class);
                 putConfiguration(configurations, prefix, DefaultDriverOption.REQUEST_PAGE_SIZE, int.class);
