@@ -71,6 +71,7 @@ class CassandraConfigurationSpec extends Specification {
 
         then:
         ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter().get() == "ociCluster"
+        !session.schemaMetadataEnabled
 
         then:
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
@@ -85,7 +86,7 @@ class CassandraConfigurationSpec extends Specification {
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
                 ['cassandra.default.basic.contact-points'                          : ["localhost:9142"],
-                 'cassandra.default.advanced.metadata.schema.enabled'              : false,
+                 'cassandra.default.advanced.metadata.schema.enabled'              : true,
                  'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
                  'cassandra.secondary.basic.contact-points'                        : ["localhost:9142"],
                  'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
@@ -103,6 +104,8 @@ class CassandraConfigurationSpec extends Specification {
         then:
         ((DefaultLoadBalancingPolicy) defaultPolicies[0]).getLocalDatacenter().get() == "ociCluster"
         ((DefaultLoadBalancingPolicy) secondaryPolicies[0]).getLocalDatacenter().get() == "ociCluster2"
+        defaultCluster.schemaMetadataEnabled
+        !secondaryCluster.schemaMetadataEnabled
 
         cleanup:
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
