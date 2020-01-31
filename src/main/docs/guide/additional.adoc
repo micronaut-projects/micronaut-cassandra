@@ -3,7 +3,6 @@ The Datastax Cassandra driver is configured using https://github.com/lightbend/c
 The equivalent bean created for micronaut is mapped under the `cassandra.*.*`. fields provided in your `application.conf`, but the bean will fallback on the `datastax-java-driver.\*` values if they are present.
 
 These config values are provided to the   https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html[CqlSession] under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java[DefaultDriverOption enum].
-application.conf will act as fallback properties when building https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html[CqlSession].
 
 .datastax configuration under `lightbend/config` - application.conf
 [source,conf]
