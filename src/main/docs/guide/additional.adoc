@@ -1,0 +1,28 @@
+The Datastax Cassandra driver is configured using https://github.com/lightbend/config[lightbend/config] under the field `datastax-java-driver.\*`. 
+
+The equivalent bean created for micronaut is mapped under the `cassandra.*.*`. fields provided in your `application.conf`, but the bean will fallback on the `datastax-java-driver.\*` values if they are present.
+
+These config values are provided to the   https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html[CqlSession] under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java[DefaultDriverOption enum].
+
+.datastax configuration under `lightbend/config` - application.conf
+[source,conf]
+----
+datastax-java-driver {
+    basic {
+        contact-points = [ "1.2.3.4:9042", "5.6.7.8:9042" ]
+        load-balancing-policy.local-datacenter = datacenter1
+    }
+}
+----
+.micronaut bean configuration - application.yml
+[source,yaml]
+----
+cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "5.6.7.8:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+----

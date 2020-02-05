@@ -119,6 +119,10 @@ subprojects { Project subproject ->
 
         testRuntime "ch.qos.logback:logback-classic:1.2.3"
         testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+
+        testCompile(group: 'org.cassandraunit', name: 'cassandra-unit', version:'4.3.1.0') {
+            exclude(module: 'slf4j-log4j12')
+        }
     }
 
     groovydoc {

@@ -15,9 +15,8 @@
  */
 package io.micronaut.configuration.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import io.micronaut.context.annotation.ConfigurationBuilder;
 import io.micronaut.context.annotation.EachProperty;
+import io.micronaut.context.annotation.Parameter;
 
 /**
  * Allows the configuration of a Cassandra Cluster connection using the datastax driver.
@@ -26,21 +25,25 @@ import io.micronaut.context.annotation.EachProperty;
  * used to denote the primary cluster bean.
  *
  * @author Nirav Assar
+ * @author Michael Pollind
  * @since 1.0
  */
-@EachProperty(value = "cassandra", primary = "default")
+@EachProperty(value = CassandraConfiguration.PREFIX, primary = "default")
 public class CassandraConfiguration {
-
-    @SuppressWarnings("WeakerAccess")
-    @ConfigurationBuilder(allowZeroArgs = true, prefixes = { "with", "add" })
-    Cluster.Builder builder = Cluster.builder();
+    public static final String PREFIX = "cassandra";
+    private final String name;
 
     /**
-     * The configuration builder.
-     *
-     * @return The builder
+     * @param name The provider name
      */
-    public Cluster.Builder getBuilder() {
-        return builder;
+    public CassandraConfiguration(@Parameter String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return The provider name
+     */
+    public String getName() {
+        return name;
     }
 }
