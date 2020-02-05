@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>1 Introduction 2.0.0.BUILD-SNAPSHOT</title>
+    <title>3 Additional Notes 2.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -65,16 +65,16 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
+                    <div class="toc-item prev-left"><a href="../guide/setup.html">&lt;&lt; <strong>2</strong><span>Setting up Cassandra</span></a></div>
+                
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../guide/setup.html"><strong>2</strong><span>Setting up Cassandra</span> >></a></div>
-                
 
 
                 <div class="project">
-                    <h1>1 Introduction</h1>
+                    <h1>3 Additional Notes</h1>
 
                     <p><strong>Version:</strong> 2.0.0.BUILD-SNAPSHOT</p>
                 </div>
@@ -83,56 +83,53 @@ function addJsClass() {
 
                 
 
-<h1 id="introduction">1 Introduction</h1>
+<h1 id="additional">3 Additional Notes</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/introduction.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/additional.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
 <div class="paragraph">
-<p>The <code>micronaut-cassandra</code> module includes support for integrating Micronaut services with Cassandra.</p>
-</div>
-<div class="sect2">
-<h3 id="_release_history">Release History</h3>
-<div class="sect3">
-<h4 id="_2_0_0">2.0.0</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>upgraded cassandra driver to 4.4.0 from 3.1.0</p>
-</li>
-</ul>
+<p>The Datastax Cassandra driver is configured using <a href="https://github.com/lightbend/config">lightbend/config</a> under the field <code>datastax-java-driver.\*</code>.</p>
 </div>
 <div class="paragraph">
-<div class="title">Migrating from 1.2.X to 2.X.X</div>
-<p>The Datastax 4.4.0 drive renames a lot of fields so these properties will need to be migrated over. Individuals that wish to use their existing configuration will have to stay on 1.2.X.</p>
+<p>The equivalent bean created for micronaut is mapped under the <code>cassandra.<strong>.</strong></code>. fields provided in your <code>application.conf</code>, but the bean will fallback on the <code>datastax-java-driver.\*</code> values if they are present.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>cassandra.*.contactPoint</code> and <code>cassandra.*.port</code> are passed to <code>cassandra.*.basic.contact-points</code> where contact-points is a list of strings in the format <code>&lt;host&gt;:&lt;port&gt;</code></p>
-</li>
-<li>
-<p><code>cassandra.*.MaxSchemaAgreementWaitSeconds</code> &#8594; <code>cassandra.*.advanced.control-connection.schema-agreement.timeout</code></p>
-</li>
-<li>
-<p><code>cassandra.*.ssl</code> &#8594; <code>cassandra.*.advanced.ssl-engine-factory = DefaultSslEngineFactory</code></p>
-</li>
-<li>
-<p><code>cassandra.*.clusterName</code> &#8594;  <code>cassandra.*.basic.session-name</code></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>These config values are provided to the   <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the <a href="https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java">DefaultDriverOption enum</a>.</p>
 </div>
+<div class="listingblock">
+<div class="title">datastax configuration under <code>lightbend/config</code> - application.conf</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-conf hljs" data-lang="conf">datastax-java-driver {
+    basic {
+        contact-points = [ "1.2.3.4:9042", "5.6.7.8:9042" ]
+        load-balancing-policy.local-datacenter = datacenter1
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">micronaut bean configuration - application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "5.6.7.8:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1</code></pre>
 </div>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/setup.html"><strong>2</strong><span>Setting up Cassandra</span> >></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/setup.html">&lt;&lt; <strong>2</strong><span>Setting up Cassandra</span></a></div>
                 
                 <div style="clear:both"></div>
             </div>

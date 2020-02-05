@@ -47,6 +47,8 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#setup"><strong>2</strong><span>Setting up Cassandra</span></a></div>
                                 
+                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>3</strong><span>Additional Notes</span></a></div>
+                                
                             </div>
                         </div>
                     </li>
@@ -81,6 +83,8 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-setup"><a href="#setup"><strong>2</strong><span>Setting up Cassandra</span></a></div>
         
+        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>3</strong><span>Additional Notes</span></a></div>
+        
         </div>
     </div>
     
@@ -89,7 +93,7 @@
         <h1>Micronaut Cassandra Configuration</h1>
         <p></p>
         <p>Provides integration between Micronaut and Cassandra</p>
-        <p><strong>Version:</strong> 1.2.1.BUILD-SNAPSHOT</p>
+        <p><strong>Version:</strong> 2.0.0.BUILD-SNAPSHOT</p>
     </div>
     
 
@@ -104,6 +108,39 @@
 
 <div class="paragraph">
 <p>The <code>micronaut-cassandra</code> module includes support for integrating Micronaut services with Cassandra.</p>
+</div>
+<div class="sect2">
+<h3 id="_release_history">Release History</h3>
+<div class="sect3">
+<h4 id="_2_0_0">2.0.0</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>upgraded cassandra driver to 4.4.0 from 3.1.0</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<div class="title">Migrating from 1.2.X to 2.X.X</div>
+<p>The Datastax 4.4.0 drive renames a lot of fields so these properties will need to be migrated over. Individuals that wish to use their existing configuration will have to stay on 1.2.X.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>cassandra.*.contactPoint</code> and <code>cassandra.*.port</code> are passed to <code>cassandra.*.basic.contact-points</code> where contact-points is a list of strings in the format <code>&lt;host&gt;:&lt;port&gt;</code></p>
+</li>
+<li>
+<p><code>cassandra.*.MaxSchemaAgreementWaitSeconds</code> &#8594; <code>cassandra.*.advanced.control-connection.schema-agreement.timeout</code></p>
+</li>
+<li>
+<p><code>cassandra.*.ssl</code> &#8594; <code>cassandra.*.advanced.ssl-engine-factory = DefaultSslEngineFactory</code></p>
+</li>
+<li>
+<p><code>cassandra.*.clusterName</code> &#8594;  <code>cassandra.*.basic.session-name</code></p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 
 
@@ -142,7 +179,7 @@
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-cassandra:1.2.1.BUILD-SNAPSHOT'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-cassandra:2.0.0.BUILD-SNAPSHOT'</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -150,7 +187,7 @@
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-cassandra&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1.BUILD-SNAPSHOT&lt;/version&gt;
+    &lt;version&gt;2.0.0.BUILD-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -159,23 +196,25 @@
 <div class="paragraph">
 <p>Micronaut supports Cassandra configuration by using the <a href="https://docs.datastax.com/en/developer/java-driver/">Datastax Java Driver</a>.
 Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
-<a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html">Cluster.Builder</a> (without the prefix).
-Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.html">Cluster</a> bean. This bean
+<a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSessionBuilder.html">CqlSessionBuilder</a>.
+Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> bean. This bean
 can be then injected into any other Micronaut bean.</p>
 </div>
 <div class="listingblock">
 <div class="title">Supply Single Configuration</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        'test',
-        ['cassandra.default.clusterName': "ociCluster",
-         'cassandra.default.contactPoint': "localhost",
-         'cassandra.default.port': 9042,
-         'cassandra.default.maxSchemaAgreementWaitSeconds': 20,
-         'cassandra.default.ssl': true]
-))
-applicationContext.start()</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "127.0.0.2:8042"
+      load-balancing-policy:
+        local-datacenter: datacenter1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -184,15 +223,71 @@ applicationContext.start()</code></pre>
 <div class="listingblock">
 <div class="title">Supply Multiple Configuration</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        'test',
-        ['cassandra.default.contactPoint': "localhost",
-         'cassandra.default.port': 9042,
-         'cassandra.secondary.contactPoint': "127.0.0.2",
-         'cassandra.secondary.port': 9043]
-))
-applicationContext.start()</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+  secondary:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9043"
+      load-balancing-policy:
+        local-datacenter: datacenter2</code></pre>
+</div>
+</div>
+
+
+<h1 id="additional">3 Additional Notes</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/additional.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Datastax Cassandra driver is configured using <a href="https://github.com/lightbend/config">lightbend/config</a> under the field <code>datastax-java-driver.\*</code>.</p>
+</div>
+<div class="paragraph">
+<p>The equivalent bean created for micronaut is mapped under the <code>cassandra.<strong>.</strong></code>. fields provided in your <code>application.conf</code>, but the bean will fallback on the <code>datastax-java-driver.\*</code> values if they are present.</p>
+</div>
+<div class="paragraph">
+<p>These config values are provided to the   <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the <a href="https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java">DefaultDriverOption enum</a>.</p>
+</div>
+<div class="listingblock">
+<div class="title">datastax configuration under <code>lightbend/config</code> - application.conf</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-conf hljs" data-lang="conf">datastax-java-driver {
+    basic {
+        contact-points = [ "1.2.3.4:9042", "5.6.7.8:9042" ]
+        load-balancing-policy.local-datacenter = datacenter1
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">micronaut bean configuration - application.yml</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "5.6.7.8:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1</code></pre>
 </div>
 </div>
 

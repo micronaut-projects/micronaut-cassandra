@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>2 Setting up Cassandra 1.2.1.BUILD-SNAPSHOT</title>
+    <title>2 Setting up Cassandra 2.0.0.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -44,6 +44,9 @@ function addJsClass() {
                         <div class="toc-item" style="margin-left:0"><a href="../guide/setup.html"><strong>2</strong><span>Setting up Cassandra</span></a>
                         </div>
                         
+                        <div class="toc-item" style="margin-left:0"><a href="../guide/additional.html"><strong>3</strong><span>Additional Notes</span></a>
+                        </div>
+                        
                     </div>
                 </div>
             </li>
@@ -68,12 +71,14 @@ function addJsClass() {
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
+                    <div class="toc-item next-right"><a href="../guide/additional.html"><strong>3</strong><span>Additional Notes</span> >></a></div>
+                
 
 
                 <div class="project">
                     <h1>2 Setting up Cassandra</h1>
 
-                    <p><strong>Version:</strong> 1.2.1.BUILD-SNAPSHOT</p>
+                    <p><strong>Version:</strong> 2.0.0.BUILD-SNAPSHOT</p>
                 </div>
 
                 
@@ -115,7 +120,7 @@ function addJsClass() {
 <div class="paragraph">
 <p>        <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-cassandra:1.2.1.BUILD-SNAPSHOT'</span></code></pre>
+<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="gradle">compile <span class="hljs-string">'io.micronaut.configuration:micronaut-cassandra:2.0.0.BUILD-SNAPSHOT'</span></code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -123,7 +128,7 @@ function addJsClass() {
 <pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
     &lt;groupId&gt;io.micronaut.configuration&lt;/groupId&gt;
     &lt;artifactId&gt;micronaut-cassandra&lt;/artifactId&gt;
-    &lt;version&gt;1.2.1.BUILD-SNAPSHOT&lt;/version&gt;
+    &lt;version&gt;2.0.0.BUILD-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
@@ -132,23 +137,25 @@ function addJsClass() {
 <div class="paragraph">
 <p>Micronaut supports Cassandra configuration by using the <a href="https://docs.datastax.com/en/developer/java-driver/">Datastax Java Driver</a>.
 Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
-<a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.Builder.html">Cluster.Builder</a> (without the prefix).
-Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/3.1/com/datastax/driver/core/Cluster.html">Cluster</a> bean. This bean
+<a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSessionBuilder.html">CqlSessionBuilder</a>.
+Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> bean. This bean
 can be then injected into any other Micronaut bean.</p>
 </div>
 <div class="listingblock">
 <div class="title">Supply Single Configuration</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        'test',
-        ['cassandra.default.clusterName': "ociCluster",
-         'cassandra.default.contactPoint': "localhost",
-         'cassandra.default.port': 9042,
-         'cassandra.default.maxSchemaAgreementWaitSeconds': 20,
-         'cassandra.default.ssl': true]
-))
-applicationContext.start()</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+        - "127.0.0.2:8042"
+      load-balancing-policy:
+        local-datacenter: datacenter1</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -157,15 +164,27 @@ applicationContext.start()</code></pre>
 <div class="listingblock">
 <div class="title">Supply Multiple Configuration</div>
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-groovy hljs" data-lang="groovy">ApplicationContext applicationContext = new DefaultApplicationContext("test")
-applicationContext.environment.addPropertySource(MapPropertySource.of(
-        'test',
-        ['cassandra.default.contactPoint': "localhost",
-         'cassandra.default.port': 9042,
-         'cassandra.secondary.contactPoint': "127.0.0.2",
-         'cassandra.secondary.port': 9043]
-))
-applicationContext.start()</code></pre>
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9042"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+  secondary:
+    advanced:
+      metadata:
+        schema:
+          enabled: false
+    basic:
+      contact-points:
+        - "127.0.0.1:9043"
+      load-balancing-policy:
+        local-datacenter: datacenter2</code></pre>
 </div>
 </div>
 
@@ -173,6 +192,8 @@ applicationContext.start()</code></pre>
                 <div style="clear:both;margin-top:15px;"></div>
                 
                     <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/additional.html"><strong>3</strong><span>Additional Notes</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
