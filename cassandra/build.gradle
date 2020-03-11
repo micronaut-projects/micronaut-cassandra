@@ -14,11 +14,11 @@ dependencies {
     annotationProcessor 'io.micronaut:micronaut-inject-java'
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
 
-    testCompile 'io.micronaut:micronaut-inject-groovy'
-    testCompile("org.spockframework:spock-core:$spockVersion") {
     implementation 'io.micronaut:micronaut-inject'
     implementation "com.datastax.oss:java-driver-core:4.4.0"
     implementation "com.datastax.oss:java-driver-mapper-processor:4.4.0"
+    testImplementation 'io.micronaut:micronaut-inject-groovy'
+    testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
     }
 }
