@@ -3,13 +3,17 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails:grails-docs:$grailsVersion"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
+        classpath "de.marcphilipp.gradle:nexus-publish-plugin:0.4.0"
         classpath 'io.github.groovylang.groovydoc:groovydoc-gradle-plugin:1.0.1'
         classpath "io.micronaut.docs:micronaut-docs-asciidoc-extensions:$micronautDocsVersion"
         classpath "io.micronaut.docs:micronaut-docs-gradle-plugins:$micronautDocsVersion"
+        classpath "io.spring.nohttp:nohttp-gradle:0.0.4.RELEASE"
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.1.0"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.28.0"
     }
 }
 
@@ -34,7 +38,7 @@ ext {
 subprojects { Project subproject ->
 
     version project.projectVersion
-    group "io.micronaut.gcp"
+    group "io.micronaut.cassandra"
     ext {
         isConfiguration = subproject.projectDir.parentFile.name == 'configurations'
         isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
@@ -42,14 +46,17 @@ subprojects { Project subproject ->
 
     repositories {
         maven { url "https://repo.grails.org/grails/core" }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 
     apply plugin:"groovy"
-    apply plugin:"java"
+    apply plugin:"java-library"
+    apply plugin: 'idea'
+    apply plugin: 'checkstyle'
+    apply plugin: "com.github.ben-manes.versions"
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+
     apply from:"https://raw.githubusercontent.com/micronaut-projects/micronaut-build/v${micronautBuildVersion}/publishing.gradle"
 
     jar {
@@ -89,6 +96,32 @@ subprojects { Project subproject ->
             }
         }
     }
+
+    dependencyUpdates {      
+      rejectVersionIf { mod ->
+        mod.candidate.version ==~ /.+(-|\.?)(b|M|RC)\d.*/ ||
+            ["alpha", "beta", "milestone"].any { mod.candidate.version.toLowerCase(Locale.ENGLISH).contains(it) } ||
+             mod.candidate.group == 'io.micronaut' // managed by the micronaut version
+      }
+      outputFormatter = { result ->
+        if (!result.outdated.dependencies.isEmpty()) {
+            def upgradeVersions = result.outdated.dependencies
+            if (!upgradeVersions.isEmpty()) {
+              println "\nThe following dependencies have later ${revision} versions:"
+              upgradeVersions.each { dep ->
+                def currentVersion = dep.version
+                println " - ${dep.group}:${dep.name} [${currentVersion} -> ${dep.available[revision]}]"
+                if (dep.projectUrl != null) {
+                  println "     ${dep.projectUrl}"
+                }
+              }
+              throw new GradleException('Abort, there are dependencies to update.')
+            }                        
+        }
+      }
+    }
+    check.dependsOn('dependencyUpdates')
+        
     dependencies {
         annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
         testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
@@ -98,17 +131,17 @@ subprojects { Project subproject ->
         documentation "org.codehaus.groovy:groovy-templates:$groovyVersion"
         documentation "org.codehaus.groovy:groovy-dateutil:$groovyVersion"
 
-        testCompile "cglib:cglib-nodep:3.3.0"
-        testCompile "org.objenesis:objenesis:3.1"
+        testImplementation "cglib:cglib-nodep:3.3.0"
+        testImplementation "org.objenesis:objenesis:3.1"
 
-        testCompile("org.spockframework:spock-core:${spockVersion}") {
+        testImplementation("org.spockframework:spock-core:${spockVersion}") {
             exclude module:'groovy-all'
         }
 
-        testRuntime "ch.qos.logback:logback-classic:1.2.3"
-        testCompile "org.codehaus.groovy:groovy-test:$groovyVersion"
+        testRuntimeOnly "ch.qos.logback:logback-classic:1.2.3"
+        testImplementation "org.codehaus.groovy:groovy-test:$groovyVersion"
 
-        testCompile(group: 'org.cassandraunit', name: 'cassandra-unit', version:'4.3.1.0') {
+        testImplementation(group: 'org.cassandraunit', name: 'cassandra-unit', version:'4.3.1.0') {
             exclude(module: 'slf4j-log4j12')
         }
     }
@@ -122,7 +155,7 @@ subprojects { Project subproject ->
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion = 8.10
+        toolVersion = 8.32
         configFile = rootProject.file('config/checkstyle/checkstyle.xml')
 
         // Per submodule
