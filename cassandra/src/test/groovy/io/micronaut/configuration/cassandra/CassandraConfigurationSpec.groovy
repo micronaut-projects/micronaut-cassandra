@@ -34,8 +34,7 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test no configuration"() {
         given:
-        ApplicationContext applicationContext = new DefaultApplicationContext("test")
-        applicationContext.start()
+        ApplicationContext applicationContext = ApplicationContext.run()
 
         expect: "No beans are created"
         !applicationContext.containsBean(CassandraConfiguration)
