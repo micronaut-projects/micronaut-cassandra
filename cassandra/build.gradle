@@ -10,4 +10,5 @@ dependencies {
     testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
     }
+    testImplementation "org.testcontainers:cassandra:1.14.3"
 }

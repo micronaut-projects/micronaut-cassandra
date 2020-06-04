@@ -25,7 +25,7 @@ import io.micronaut.context.env.MapPropertySource
 import io.micronaut.context.event.BeanCreatedEvent
 import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.inject.qualifiers.Qualifiers
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
+import org.testcontainers.containers.CassandraContainer
 import spock.lang.Specification
 
 import javax.inject.Singleton
@@ -46,12 +46,13 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test single cluster connection"() {
         given:
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        CassandraContainer cassandra = new CassandraContainer();
+        cassandra.start()
         // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.default.basic.contact-points'                        : ["localhost:9142"],
+                ['cassandra.default.basic.contact-points'                        : ["localhost:$cassandra.firstMappedPort"],
                  'cassandra.default.advanced.metadata.schema.enabled'            : false,
                  'cassandra.default.basic.load-balancing-policy.local-datacenter': 'ociCluster']
         ))
@@ -73,21 +74,23 @@ class CassandraConfigurationSpec extends Specification {
         !session.schemaMetadataEnabled
 
         then:
-        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+        cassandra.stop()
         applicationContext.close()
     }
 
     void "test multiple cluster connections"() {
         given:
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        CassandraContainer cassandra = new CassandraContainer();
+        cassandra.start()
+
         // tag::multiple[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['cassandra.default.basic.contact-points'                          : ["localhost:9142"],
+                ['cassandra.default.basic.contact-points'                          : ["localhost:$cassandra.firstMappedPort"],
                  'cassandra.default.advanced.metadata.schema.enabled'              : true,
                  'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'ociCluster',
-                 'cassandra.secondary.basic.contact-points'                        : ["localhost:9142"],
+                 'cassandra.secondary.basic.contact-points'                        : ["localhost:$cassandra.firstMappedPort"],
                  'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
                  'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'ociCluster2']
         ))
@@ -107,7 +110,7 @@ class CassandraConfigurationSpec extends Specification {
         !secondaryCluster.schemaMetadataEnabled
 
         cleanup:
-        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+        cassandra.stop()
         applicationContext.close()
     }
 
