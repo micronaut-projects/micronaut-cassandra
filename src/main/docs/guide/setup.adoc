@@ -9,7 +9,7 @@ $ mn create-app my-app --features cassandra
 
 To enable the Cassandra configuration, add the following dependency to your application:
 
-dependency:io.micronaut.configuration:micronaut-cassandra[version="{version}"]
+dependency:io.micronaut.cassandra:micronaut-cassandra[version="{version}"]
 
 Micronaut supports Cassandra configuration by using the https://docs.datastax.com/en/developer/java-driver/[Datastax Java Driver].
 Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
