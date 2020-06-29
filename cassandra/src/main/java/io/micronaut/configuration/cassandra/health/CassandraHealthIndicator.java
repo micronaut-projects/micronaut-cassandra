@@ -45,7 +45,6 @@ import java.util.UUID;
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
-    private final CqlSession cqlSession;
     private static final SimpleStatement VALIDATION_SELECT = selectFrom("system", "local")
             .column("key")
             .column("release_version")
@@ -58,6 +57,8 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             .build()
             .setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
+    private final CqlSession cqlSession;
+
     /**
      * Default constructor.
      *
@@ -66,7 +67,6 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
     public CassandraHealthIndicator(final CqlSession cqlSession) {
         this.cqlSession = cqlSession;
     }
-
 
     @Override
     protected Map<String, Object> getHealthInformation() {
@@ -110,12 +110,12 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         return detail;
     }
 
-    private static String getStatus(boolean closed) {
-        return closed ? "CLOSED" : "OPEN";
-    }
-
     @Override
     protected String getName() {
         return "cassandra";
+    }
+
+    private static String getStatus(boolean closed) {
+        return closed ? "CLOSED" : "OPEN";
     }
 }
