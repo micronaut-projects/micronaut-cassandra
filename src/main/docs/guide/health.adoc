@@ -1,0 +1,39 @@
+When the `cassandra` module is activated a api:io.micronaut.configuration.cassandra.health.CassandraHealthIndicator[] is
+activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus]
+interface resolving the health of the Cassandra cluster.
+
+[source,json]
+----
+"cassandra": {
+  "status": "UP",
+  "details": {
+    "session": "OPEN",
+    "cluster_name": "Test Cluster",
+    "key": "local",
+    "data_center": "datacenter1",
+    "release_version": "3.11.2",
+    "cql_version": "3.4.4",
+    "native_protocol_version": "4",
+    "partitioner": "org.apache.cassandra.dht.Murmur3Partitioner",
+    "rack": "rack1",
+    "nodes": {
+      "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
+        "broadcast_address": "/172.17.0.3",
+        "state": "UP",
+        "distance": "LOCAL",
+        "open_connections": "2",
+        "cassandra_version": "3.11.2",
+        "datacenter": "datacenter1",
+        "rack": "rack1",
+        "uptime_ms": "1593462452206",
+        "is_reconnecting": "false"
+      }
+    }
+  }
+}
+----
+
+
+TIP: To disable the Cassandra health indicator entirely, add `endpoints.health.cassandra.enabled: false`.
+
+See the section on the https://docs.micronaut.io/latest/guide/index.html#healthEndpoint[Health Endpoint] for more information.
