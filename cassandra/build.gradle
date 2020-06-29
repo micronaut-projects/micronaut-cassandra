@@ -6,9 +6,13 @@ dependencies {
     implementation 'io.micronaut:micronaut-inject'
     api "com.datastax.oss:java-driver-core:4.6.1"
     api "com.datastax.oss:java-driver-mapper-processor:4.6.1"
+
+    compileOnly "io.micronaut:micronaut-management"
+    
     testImplementation 'io.micronaut:micronaut-inject-groovy'
     testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
     }
     testImplementation "org.testcontainers:cassandra:1.14.3"
+    testImplementation "io.micronaut:micronaut-management"
 }
