@@ -13,6 +13,8 @@ dependencies {
     testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
     }
+    testImplementation "io.micronaut.test:micronaut-test-spock:$micronautTestVersion"
+    testImplementation "org.testcontainers:spock:1.14.3"
     testImplementation "org.testcontainers:cassandra:1.14.3"
     testImplementation "io.micronaut:micronaut-management"
 }
