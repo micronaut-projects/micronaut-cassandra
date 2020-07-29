@@ -4,11 +4,11 @@ dependencies {
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
 
     implementation 'io.micronaut:micronaut-inject'
-    api "com.datastax.oss:java-driver-core:4.7.2"
-    api "com.datastax.oss:java-driver-mapper-processor:4.7.2"
+    api "com.datastax.oss:java-driver-core:4.8.0"
+    api "com.datastax.oss:java-driver-mapper-processor:4.8.0"
     testImplementation 'io.micronaut:micronaut-inject-groovy'
     testImplementation("org.spockframework:spock-core:$spockVersion") {
         exclude module: 'groovy-all'
     }
-    testImplementation "org.testcontainers:cassandra:1.14.3"
+    testImplementation "org.testcontainers:cassandra:1.15.0-rc1"
 }
