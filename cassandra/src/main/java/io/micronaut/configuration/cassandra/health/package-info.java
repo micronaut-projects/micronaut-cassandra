@@ -17,6 +17,6 @@
  * Classes related to performing health checks for Cassandra.
  *
  * @author Ilkin Ashrafli
- * @since 2.0.1
+ * @since 2.1.0
  */
 package io.micronaut.configuration.cassandra.health;

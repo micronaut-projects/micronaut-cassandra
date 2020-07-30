@@ -34,7 +34,7 @@ import javax.inject.Singleton
 
 /**
  * @author Ilkin Ashrafli
- * @since 2.0.1
+ * @since 2.1.0
  */
 class CassandraHealthIndicatorSpec extends Specification {
 
@@ -68,8 +68,8 @@ class CassandraHealthIndicatorSpec extends Specification {
         then:
         result.status == HealthStatus.UP
         Map<String, Object> detailsMap = (Map<String, Object>) result.details
-        detailsMap.containsKey("release_version")
-        detailsMap.containsKey("nodes")
+        detailsMap.containsKey("cluster")
+        detailsMap.containsKey("node_count")
         detailsMap.get("session").toString().startsWith("OPEN")
 
         when:
