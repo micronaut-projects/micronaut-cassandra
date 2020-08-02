@@ -15,7 +15,9 @@
  */
 package io.micronaut.configuration.cassandra.health;
 
+import com.datastax.oss.driver.api.core.AllNodesFailedException;
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
@@ -24,16 +26,19 @@ import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 
 import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
+import com.datastax.oss.driver.api.core.servererrors.QueryExecutionException;
+import com.datastax.oss.driver.api.core.servererrors.QueryValidationException;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 /**
  * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra.
@@ -46,16 +51,26 @@ import java.util.UUID;
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
+    private static final String COL_RELEASE_VERSION = "release_version";
+    private static final String COL_CLUSTER_NAME = "cluster_name";
+    private static final String COL_CQL_VERSION = "cql_version";
+    private static final String COL_DATA_CENTER = "data_center";
+    private static final String COL_NATIVE_PROTOCOL_VERSION = "native_protocol_version";
+    private static final String COL_PARTITIONER = "partitioner";
+    private static final String COL_RACK = "rack";
+
     private static final SimpleStatement VALIDATION_SELECT = selectFrom("system", "local")
-            .column("release_version")
-            .column("cluster_name")
-            .column("cql_version")
-            .column("data_center")
-            .column("native_protocol_version")
-            .column("partitioner")
-            .column("rack")
+            .column(COL_RELEASE_VERSION)
+            .column(COL_CLUSTER_NAME)
+            .column(COL_CQL_VERSION)
+            .column(COL_DATA_CENTER)
+            .column(COL_NATIVE_PROTOCOL_VERSION)
+            .column(COL_PARTITIONER)
+            .column(COL_RACK)
             .build()
             .setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
+
+    private static final Logger LOG = LoggerFactory.getLogger(CassandraHealthIndicator.class);
 
     private final CqlSession cqlSession;
 
@@ -70,34 +85,31 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
 
     @Override
     protected Map<String, Object> getHealthInformation() {
-        ResultSet resultSet = cqlSession.execute(VALIDATION_SELECT);
-        Row row = resultSet.one();
         Map<String, Object> detail = new LinkedHashMap<>();
-        detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
-        if (cqlSession.getKeyspace().isPresent()) {
-            detail.put("keyspace", cqlSession.getKeyspace().get());
-        }
-
-        Map<String, String> clusterMap = new HashMap<>();
-        clusterMap.put("cluster_name", row.getString("cluster_name"));
-        clusterMap.put("data_center", row.getString("data_center"));
-        clusterMap.put("release_version", row.getString("release_version"));
-        clusterMap.put("cql_version", row.getString("cql_version"));
-        clusterMap.put("native_protocol_version", row.getString("native_protocol_version"));
-        clusterMap.put("partitioner", row.getString("partitioner"));
-        clusterMap.put("rack", row.getString("rack"));
-        detail.put("cluster", clusterMap);
-
         Map<UUID, Node> nodes = cqlSession.getMetadata().getNodes();
-        Map<UUID, Map<String, Object>> nodesMap = new HashMap<>();
-        detail.put("node_count", nodes.keySet().size());
+        detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
+        Optional<CqlIdentifier> opKeyspace = cqlSession.getKeyspace();
+        if (opKeyspace.isPresent()) {
+            detail.put("keyspace", opKeyspace.get());
+        }
+        detail.put("nodes_count", nodes.keySet().size());
 
-        if (nodes.keySet().size() <= 10) {
-            for (UUID uuid : nodes.keySet()) {
-                Node node = nodes.get(uuid);
+        Map<UUID, Map<String, Object>> nodesMap = new HashMap<>();
+        Map<NodeState, Integer> nodeStateMap = new EnumMap<>(NodeState.class);
+        boolean up = false;
+        int i = 0;
+        for (Map.Entry<UUID, Node> entry : nodes.entrySet()) {
+            UUID uuid = entry.getKey();
+            Node node = entry.getValue();
+            nodeStateMap.merge(node.getState(), 1, (a, b) -> a + b);
+            if (node.getState() == NodeState.UP) {
+                up = true;
+            }
+            if (i++ < 10) {
                 Map<String, Object> nodeMap = new HashMap<>();
-                if (node.getBroadcastAddress().isPresent()) {
-                    nodeMap.put("broadcast_address", node.getBroadcastAddress().get().getAddress());
+                Optional<InetSocketAddress> opBroadcastAddress = node.getBroadcastAddress();
+                if (opBroadcastAddress.isPresent()) {
+                    nodeMap.put("broadcast_address", opBroadcastAddress.get().getAddress());
                 }
                 nodeMap.put("state", node.getState());
                 nodeMap.put("distance", node.getDistance());
@@ -109,10 +121,29 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
                 nodeMap.put("is_reconnecting", node.isReconnecting());
                 nodesMap.put(uuid, nodeMap);
             }
+        }
+        detail.put("nodes_state", nodeStateMap);
+        if (nodesMap.size() > 0) {
             detail.put("nodes", nodesMap);
         }
-
-        healthStatus = HealthStatus.UP;
+        healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
+        try {
+            ResultSet resultSet = cqlSession.execute(VALIDATION_SELECT);
+            Row row = resultSet.one();
+            Map<String, String> clusterMap = new HashMap<>();
+            clusterMap.put(COL_CLUSTER_NAME, row.getString(COL_CLUSTER_NAME));
+            clusterMap.put(COL_DATA_CENTER, row.getString(COL_DATA_CENTER));
+            clusterMap.put(COL_RELEASE_VERSION, row.getString(COL_RELEASE_VERSION));
+            clusterMap.put(COL_CQL_VERSION, row.getString(COL_CQL_VERSION));
+            clusterMap.put(COL_NATIVE_PROTOCOL_VERSION, row.getString(COL_NATIVE_PROTOCOL_VERSION));
+            clusterMap.put(COL_PARTITIONER, row.getString(COL_PARTITIONER));
+            clusterMap.put(COL_RACK, row.getString(COL_RACK));
+            detail.put("cluster", clusterMap);
+        } catch (AllNodesFailedException | QueryExecutionException | QueryValidationException ex) {
+            LOG.error(String.format("Failed to execute \"%s\": %s", VALIDATION_SELECT.getQuery(), ex.getMessage()), ex);
+        } catch (Exception ex) {
+            LOG.error(String.format("Failed to prepare cluster info: %s", ex.getMessage()), ex);
+        }
         return detail;
     }
 
