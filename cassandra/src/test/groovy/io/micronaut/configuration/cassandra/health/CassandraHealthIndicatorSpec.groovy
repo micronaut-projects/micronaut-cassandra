@@ -69,7 +69,8 @@ class CassandraHealthIndicatorSpec extends Specification {
         result.status == HealthStatus.UP
         Map<String, Object> detailsMap = (Map<String, Object>) result.details
         detailsMap.containsKey("cluster")
-        detailsMap.containsKey("node_count")
+        detailsMap.containsKey("nodes_count")
+        detailsMap.containsKey("nodes_state")
         detailsMap.get("session").toString().startsWith("OPEN")
 
         when:

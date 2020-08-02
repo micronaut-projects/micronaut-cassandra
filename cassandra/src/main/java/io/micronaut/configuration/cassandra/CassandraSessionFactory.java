@@ -62,19 +62,16 @@ public class CassandraSessionFactory implements AutoCloseable {
      */
     @EachBean(CassandraConfiguration.class)
     public CqlSessionBuilder session(CassandraConfiguration configuration) {
-
         try {
-            CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
+            return CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
                 ConfigFactory.invalidateCaches();
                 String prefix = configuration.getName();
                 return ConfigFactory.parseMap(this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW)).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));
-            return builder;
         } catch (Exception e) {
-            LOG.error("Failed to instantiate CQL session: " + e.getMessage(), e);
+            LOG.error(String.format("Failed to instantiate CQL session: %s", e.getMessage()), e);
             throw e;
         }
-
     }
 
     /**
@@ -102,7 +99,7 @@ public class CassandraSessionFactory implements AutoCloseable {
                 sess.close();
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn("Error closing data source [" + sess + "]: " + e.getMessage(), e);
+                    LOG.warn(String.format("Error closing data source [%s]: %s", sess, e.getMessage()), e);
                 }
             }
         }

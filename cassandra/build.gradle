@@ -4,8 +4,9 @@ dependencies {
     annotationProcessor "io.micronaut.docs:micronaut-docs-asciidoc-config-props:$micronautDocsVersion"
 
     implementation 'io.micronaut:micronaut-inject'
-    api "com.datastax.oss:java-driver-core:4.8.0"
-    api "com.datastax.oss:java-driver-mapper-processor:4.8.0"
+
+    api "com.datastax.oss:java-driver-core:$datastaxCassandraVersion"
+    api "com.datastax.oss:java-driver-mapper-processor:$datastaxCassandraVersion"
 
     compileOnly "io.micronaut:micronaut-management"
     
