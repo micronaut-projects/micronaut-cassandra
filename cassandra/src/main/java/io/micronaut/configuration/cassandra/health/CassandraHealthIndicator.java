@@ -68,7 +68,8 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             .column(COL_PARTITIONER)
             .column(COL_RACK)
             .build()
-            .setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
+            .setConsistencyLevel(ConsistencyLevel.LOCAL_ONE)
+            .setTimeout(Duration.ofSeconds(10));
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraHealthIndicator.class);
 
