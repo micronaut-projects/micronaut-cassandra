@@ -5,8 +5,8 @@ dependencies {
 
     implementation 'io.micronaut:micronaut-inject'
 
-    api "com.datastax.oss:java-driver-core:$datastaxCassandraVersion"
-    api "com.datastax.oss:java-driver-mapper-processor:$datastaxCassandraVersion"
+    api "com.datastax.oss:java-driver-core:$datastaxCassandraDriverVersion"
+    api "com.datastax.oss:java-driver-mapper-processor:$datastaxCassandraDriverVersion"
 
     compileOnly "io.micronaut:micronaut-management"
     
