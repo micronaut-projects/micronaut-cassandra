@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.*;
 
 /**
@@ -112,6 +113,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
                 if (opBroadcastAddress.isPresent()) {
                     nodeMap.put("broadcast_address", opBroadcastAddress.get().getAddress());
                 }
+                nodeMap.put("endpoint", node.getEndPoint());
                 nodeMap.put("state", node.getState());
                 nodeMap.put("distance", node.getDistance());
                 nodeMap.put("open_connections", node.getOpenConnections());
@@ -125,7 +127,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         }
         detail.put("nodes_state", nodeStateMap);
         if (nodesMap.size() > 0) {
-            detail.put("nodes", nodesMap);
+            detail.put("nodes (10 max.)", nodesMap);
         }
         healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
         try {
