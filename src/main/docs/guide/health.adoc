@@ -8,16 +8,13 @@ interface resolving the health of the Cassandra cluster.
   "status": "UP",
   "details": {
     "session": "OPEN",
-    "cluster_name": "Test Cluster",
-    "key": "local",
-    "data_center": "datacenter1",
-    "release_version": "3.11.2",
-    "cql_version": "3.4.4",
-    "native_protocol_version": "4",
-    "partitioner": "org.apache.cassandra.dht.Murmur3Partitioner",
-    "rack": "rack1",
-    "nodes": {
+    "nodes_count": 1,
+    "nodes_state": {
+      "UP": 1
+    }
+    "nodes (10 max.)": {
       "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
+        "endpoint": "localhost/0:0:0:0:0:0:0:1:32834"
         "broadcast_address": "/172.17.0.3",
         "state": "UP",
         "distance": "LOCAL",
@@ -28,6 +25,15 @@ interface resolving the health of the Cassandra cluster.
         "uptime_ms": "1593462452206",
         "is_reconnecting": "false"
       }
+    }
+    "cluster": {
+      "cluster_name": "Test Cluster",
+      "data_center": "datacenter1",
+      "release_version": "3.11.2",
+      "cql_version": "3.4.4",
+      "native_protocol_version": "4",
+      "partitioner": "org.apache.cassandra.dht.Murmur3Partitioner",
+      "rack": "rack1"
     }
   }
 }
