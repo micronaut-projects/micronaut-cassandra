@@ -15,30 +15,18 @@
  */
 package io.micronaut.configuration.cassandra.health;
 
-import com.datastax.oss.driver.api.core.AllNodesFailedException;
-import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.api.core.cql.Row;
-import com.datastax.oss.driver.api.core.cql.SimpleStatement;
-
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.api.core.metadata.NodeState;
-import com.datastax.oss.driver.api.core.servererrors.QueryExecutionException;
-import com.datastax.oss.driver.api.core.servererrors.QueryValidationException;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.net.InetSocketAddress;
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -51,28 +39,6 @@ import java.util.*;
 @Requires(beans = HealthEndpoint.class)
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
-
-    private static final String COL_RELEASE_VERSION = "release_version";
-    private static final String COL_CLUSTER_NAME = "cluster_name";
-    private static final String COL_CQL_VERSION = "cql_version";
-    private static final String COL_DATA_CENTER = "data_center";
-    private static final String COL_NATIVE_PROTOCOL_VERSION = "native_protocol_version";
-    private static final String COL_PARTITIONER = "partitioner";
-    private static final String COL_RACK = "rack";
-
-    private static final SimpleStatement VALIDATION_SELECT = selectFrom("system", "local")
-            .column(COL_RELEASE_VERSION)
-            .column(COL_CLUSTER_NAME)
-            .column(COL_CQL_VERSION)
-            .column(COL_DATA_CENTER)
-            .column(COL_NATIVE_PROTOCOL_VERSION)
-            .column(COL_PARTITIONER)
-            .column(COL_RACK)
-            .build()
-            .setConsistencyLevel(ConsistencyLevel.LOCAL_ONE)
-            .setTimeout(Duration.ofSeconds(10));
-
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraHealthIndicator.class);
 
     private final CqlSession cqlSession;
 
@@ -90,6 +56,10 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         Map<String, Object> detail = new LinkedHashMap<>();
         Map<UUID, Node> nodes = cqlSession.getMetadata().getNodes();
         detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
+        Optional<String> opClusterName = cqlSession.getMetadata().getClusterName();
+        if (opClusterName.isPresent()) {
+            detail.put("cluster_name", opClusterName.get());
+        }
         Optional<CqlIdentifier> opKeyspace = cqlSession.getKeyspace();
         if (opKeyspace.isPresent()) {
             detail.put("keyspace", opKeyspace.get());
@@ -130,23 +100,6 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             detail.put("nodes (10 max.)", nodesMap);
         }
         healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
-        try {
-            ResultSet resultSet = cqlSession.execute(VALIDATION_SELECT);
-            Row row = resultSet.one();
-            Map<String, String> clusterMap = new HashMap<>();
-            clusterMap.put(COL_CLUSTER_NAME, row.getString(COL_CLUSTER_NAME));
-            clusterMap.put(COL_DATA_CENTER, row.getString(COL_DATA_CENTER));
-            clusterMap.put(COL_RELEASE_VERSION, row.getString(COL_RELEASE_VERSION));
-            clusterMap.put(COL_CQL_VERSION, row.getString(COL_CQL_VERSION));
-            clusterMap.put(COL_NATIVE_PROTOCOL_VERSION, row.getString(COL_NATIVE_PROTOCOL_VERSION));
-            clusterMap.put(COL_PARTITIONER, row.getString(COL_PARTITIONER));
-            clusterMap.put(COL_RACK, row.getString(COL_RACK));
-            detail.put("cluster", clusterMap);
-        } catch (AllNodesFailedException | QueryExecutionException | QueryValidationException ex) {
-            LOG.error(String.format("Failed to execute \"%s\": %s", VALIDATION_SELECT.getQuery(), ex.getMessage()), ex);
-        } catch (Exception ex) {
-            LOG.error(String.format("Failed to prepare cluster info: %s", ex.getMessage()), ex);
-        }
         return detail;
     }
 

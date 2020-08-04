@@ -8,6 +8,7 @@ interface resolving the health of the Cassandra cluster.
   "status": "UP",
   "details": {
     "session": "OPEN",
+    "cluster_name": "Test Cluster",
     "nodes_count": 1,
     "nodes_state": {
       "UP": 1
@@ -25,15 +26,6 @@ interface resolving the health of the Cassandra cluster.
         "uptime_ms": "1593462452206",
         "is_reconnecting": "false"
       }
-    }
-    "cluster": {
-      "cluster_name": "Test Cluster",
-      "data_center": "datacenter1",
-      "release_version": "3.11.2",
-      "cql_version": "3.4.4",
-      "native_protocol_version": "4",
-      "partitioner": "org.apache.cassandra.dht.Murmur3Partitioner",
-      "rack": "rack1"
     }
   }
 }
