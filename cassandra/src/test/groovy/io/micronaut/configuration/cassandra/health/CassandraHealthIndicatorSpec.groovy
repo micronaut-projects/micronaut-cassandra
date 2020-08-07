@@ -34,7 +34,7 @@ import javax.inject.Singleton
 
 /**
  * @author Ilkin Ashrafli
- * @since 2.1.0
+ * @since 2.2.0
  */
 class CassandraHealthIndicatorSpec extends Specification {
 
