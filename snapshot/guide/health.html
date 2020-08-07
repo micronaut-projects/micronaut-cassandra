@@ -11,7 +11,7 @@
 
         gtag('config', 'UA-82213539-2');
     </script>
-    <title>2 Setting up Cassandra 2.1.1.BUILD-SNAPSHOT</title>
+    <title>3 Health Checks 2.1.1.BUILD-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -71,18 +71,18 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/setup.html">&lt;&lt; <strong>2</strong><span>Setting up Cassandra</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../guide/health.html"><strong>3</strong><span>Health Checks</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/additional.html"><strong>4</strong><span>Additional Notes</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>2 Setting up Cassandra</h1>
+                    <h1>3 Health Checks</h1>
 
                     <p><strong>Version:</strong> 2.1.1.BUILD-SNAPSHOT</p>
                 </div>
@@ -90,15 +90,49 @@ function addJsClass() {
                 
 
                 
-<h1 id="setup"><a class="anchor" href="#setup"></a>2 Setting up Cassandra</h1>
+<h1 id="health"><a class="anchor" href="#health"></a>3 Health Checks</h1>
 
 <div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/setup.adoc"'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/health.adoc"'>
         <i class='fa fa-pencil-square-o'></i> Improve this doc
     </button>
 </div>
 
 
+<div class="paragraph">
+<p>When the <code>cassandra</code> module is activated a <a href="../api/io/micronaut/configuration/cassandra/health/CassandraHealthIndicator.html">CassandraHealthIndicator</a> is
+activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a>
+interface resolving the health of the Cassandra cluster.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"cassandra": {
+  "status": "UP",
+  "details": {
+    "session": "OPEN",
+    "cluster_name": "Test Cluster",
+    "nodes_count": 1,
+    "nodes_state": {
+      "UP": 1
+    }
+    "nodes (10 max.)": {
+      "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
+        "endpoint": "localhost/0:0:0:0:0:0:0:1:32834"
+        "broadcast_address": "/172.17.0.3",
+        "state": "UP",
+        "distance": "LOCAL",
+        "open_connections": "2",
+        "cassandra_version": "3.11.2",
+        "datacenter": "datacenter1",
+        "rack": "rack1",
+        "uptime_ms": "1593462452206",
+        "is_reconnecting": "false"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -106,100 +140,21 @@ function addJsClass() {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-<div class="title">Using the CLI</div>
-<div class="paragraph">
-<p>If you are creating your project using the Micronaut CLI, supply the <code>cassandra</code> feature to include Cassandra configuration in your project:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>$ mn create-app my-app --features cassandra</pre>
-</div>
-</div>
+To disable the Cassandra health indicator entirely, add <code>endpoints.health.cassandra.enabled: false</code>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>To enable the Cassandra configuration, add the following dependency to your application:</p>
-</div>
-<div class="paragraph">
-<p>        <div class="listingblock multi-language-sample">
-<div class="title"></div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.cassandra:micronaut-cassandra:2.1.1.BUILD-SNAPSHOT")</span></code></pre>
-</div>
-</div>
-<div class="listingblock multi-language-sample">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
-    &lt;groupId&gt;io.micronaut.cassandra&lt;/groupId&gt;
-    &lt;artifactId&gt;micronaut-cassandra&lt;/artifactId&gt;
-    &lt;version&gt;2.1.1.BUILD-SNAPSHOT&lt;/version&gt;
-&lt;/dependency&gt;</code></pre>
-</div>
-</div>
-</p>
-</div>
-<div class="paragraph">
-<p>Micronaut supports Cassandra configuration by using the <a href="https://docs.datastax.com/en/developer/java-driver/">Datastax Java Driver</a>.
-Configuration values can be supplied a property source such as below. The property name is derived from the builder methods in
-<a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSessionBuilder.html">CqlSessionBuilder</a>.
-Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> bean. This bean
-can be then injected into any other Micronaut bean.</p>
-</div>
-<div class="listingblock">
-<div class="title">Supply Single Configuration</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
-  default:
-    advanced:
-      metadata:
-        schema:
-          enabled: false
-    basic:
-      contact-points:
-        - "127.0.0.1:9042"
-        - "127.0.0.2:8042"
-      load-balancing-policy:
-        local-datacenter: datacenter1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Multiple Cluster instances can be configured as follows:</p>
-</div>
-<div class="listingblock">
-<div class="title">Supply Multiple Configuration</div>
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
-  default:
-    advanced:
-      metadata:
-        schema:
-          enabled: false
-    basic:
-      contact-points:
-        - "127.0.0.1:9042"
-      load-balancing-policy:
-        local-datacenter: datacenter1
-  secondary:
-    advanced:
-      metadata:
-        schema:
-          enabled: false
-    basic:
-      contact-points:
-        - "127.0.0.1:9043"
-      load-balancing-policy:
-        local-datacenter: datacenter2</code></pre>
-</div>
+<p>See the section on the <a href="https://docs.micronaut.io/latest/guide/index.html#healthEndpoint">Health Endpoint</a> for more information.</p>
 </div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/setup.html">&lt;&lt; <strong>2</strong><span>Setting up Cassandra</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/health.html"><strong>3</strong><span>Health Checks</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/additional.html"><strong>4</strong><span>Additional Notes</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>
