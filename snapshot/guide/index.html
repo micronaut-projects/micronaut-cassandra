@@ -47,11 +47,9 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#setup"><strong>2</strong><span>Setting up Cassandra</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#health"><strong>3</strong><span>Health Checks</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>3</strong><span>Additional Notes</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>4</strong><span>Additional Notes</span></a></div>
-                                
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>5</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>4</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -86,11 +84,9 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-setup"><a href="#setup"><strong>2</strong><span>Setting up Cassandra</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-health"><a href="#health"><strong>3</strong><span>Health Checks</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>3</strong><span>Additional Notes</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>4</strong><span>Additional Notes</span></a></div>
-        
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>5</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>4</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -100,7 +96,7 @@
         <h1>Micronaut Cassandra Configuration</h1>
         <p></p>
         <p>Provides integration between Micronaut and Cassandra</p>
-        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option selected='selected' value='https://micronaut-projects.github.io/micronaut-cassandra/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/2.1.0/guide/index.html'>2.1.0</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/2.0.0/guide/index.html'>2.0.0</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/1.2.0/guide/index.html'>1.2.0</option></select></p>
+        <p><strong>Version:</strong> <select style='max-width: 200px' onChange='window.document.location.href=this.options[this.selectedIndex].value;'><option selected='selected' value='https://micronaut-projects.github.io/micronaut-cassandra/snapshot/guide/index.html'>SNAPSHOT</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/2.2.0/guide/index.html'>2.2.0</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/2.1.0/guide/index.html'>2.1.0</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/2.0.0/guide/index.html'>2.0.0</option><option value='https://micronaut-projects.github.io/micronaut-cassandra/1.2.0/guide/index.html'>1.2.0</option></select></p>
     </div>
     
 <h1 id="introduction"><a class="anchor" href="#introduction"></a>1 Introduction</h1>
@@ -258,66 +254,7 @@ can be then injected into any other Micronaut bean.</p>
 </div>
 </div>
 
-<h1 id="health"><a class="anchor" href="#health"></a>3 Health Checks</h1>
-
-<div class='contribute-btn'>
-    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/health.adoc"'>
-        <i class='fa fa-pencil-square-o'></i> Improve this doc
-    </button>
-</div>
-
-
-<div class="paragraph">
-<p>When the <code>cassandra</code> module is activated a <a href="../api/io/micronaut/configuration/cassandra/health/CassandraHealthIndicator.html">CassandraHealthIndicator</a> is
-activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a>
-interface resolving the health of the Cassandra cluster.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"cassandra": {
-  "status": "UP",
-  "details": {
-    "session": "OPEN",
-    "cluster_name": "Test Cluster",
-    "nodes_count": 1,
-    "nodes_state": {
-      "UP": 1
-    }
-    "nodes (10 max.)": {
-      "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
-        "endpoint": "localhost/0:0:0:0:0:0:0:1:32834"
-        "broadcast_address": "/172.17.0.3",
-        "state": "UP",
-        "distance": "LOCAL",
-        "open_connections": "2",
-        "cassandra_version": "3.11.2",
-        "datacenter": "datacenter1",
-        "rack": "rack1",
-        "uptime_ms": "1593462452206",
-        "is_reconnecting": "false"
-      }
-    }
-  }
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-To disable the Cassandra health indicator entirely, add <code>endpoints.health.cassandra.enabled: false</code>.
-</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>See the section on the <a href="https://docs.micronaut.io/latest/guide/index.html#healthEndpoint">Health Endpoint</a> for more information.</p>
-</div>
-
-<h1 id="additional"><a class="anchor" href="#additional"></a>4 Additional Notes</h1>
+<h1 id="additional"><a class="anchor" href="#additional"></a>3 Additional Notes</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/additional.adoc"'>
@@ -360,7 +297,7 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
 </div>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>5 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>4 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/repository.adoc"'>
