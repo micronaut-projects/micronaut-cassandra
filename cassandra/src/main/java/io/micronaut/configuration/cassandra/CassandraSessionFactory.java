@@ -42,8 +42,8 @@ import java.util.List;
 public class CassandraSessionFactory implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraSessionFactory.class);
-    private List<CqlSession> sessions = new ArrayList<>(2);
-    private PropertyResolver resolver;
+    private final List<CqlSession> sessions = new ArrayList<>(2);
+    private final PropertyResolver resolver;
 
     /**
      * Default constructor.
@@ -94,12 +94,12 @@ public class CassandraSessionFactory implements AutoCloseable {
     @Override
     @PreDestroy
     public void close() {
-        for (CqlSession sess : sessions) {
+        for (CqlSession session : sessions) {
             try {
-                sess.close();
+                session.close();
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn(String.format("Error closing data source [%s]: %s", sess, e.getMessage()), e);
+                    LOG.warn(String.format("Error closing data source [%s]: %s", session, e.getMessage()), e);
                 }
             }
         }

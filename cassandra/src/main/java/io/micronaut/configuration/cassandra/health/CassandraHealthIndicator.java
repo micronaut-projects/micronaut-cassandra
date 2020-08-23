@@ -57,13 +57,9 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         Map<UUID, Node> nodes = cqlSession.getMetadata().getNodes();
         detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
         Optional<String> opClusterName = cqlSession.getMetadata().getClusterName();
-        if (opClusterName.isPresent()) {
-            detail.put("cluster_name", opClusterName.get());
-        }
+        opClusterName.ifPresent(s -> detail.put("cluster_name", s));
         Optional<CqlIdentifier> opKeyspace = cqlSession.getKeyspace();
-        if (opKeyspace.isPresent()) {
-            detail.put("keyspace", opKeyspace.get());
-        }
+        opKeyspace.ifPresent(cqlIdentifier -> detail.put("keyspace", cqlIdentifier));
         detail.put("nodes_count", nodes.keySet().size());
 
         Map<UUID, Map<String, Object>> nodesMap = new HashMap<>();
@@ -73,16 +69,14 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         for (Map.Entry<UUID, Node> entry : nodes.entrySet()) {
             UUID uuid = entry.getKey();
             Node node = entry.getValue();
-            nodeStateMap.merge(node.getState(), 1, (a, b) -> a + b);
+            nodeStateMap.merge(node.getState(), 1, Integer::sum);
             if (node.getState() == NodeState.UP) {
                 up = true;
             }
             if (i++ < 10) {
                 Map<String, Object> nodeMap = new HashMap<>();
                 Optional<InetSocketAddress> opBroadcastAddress = node.getBroadcastAddress();
-                if (opBroadcastAddress.isPresent()) {
-                    nodeMap.put("broadcast_address", opBroadcastAddress.get().getAddress());
-                }
+                opBroadcastAddress.ifPresent(inetSocketAddress -> nodeMap.put("broadcast_address", inetSocketAddress.getAddress()));
                 nodeMap.put("endpoint", node.getEndPoint());
                 nodeMap.put("state", node.getState());
                 nodeMap.put("distance", node.getDistance());

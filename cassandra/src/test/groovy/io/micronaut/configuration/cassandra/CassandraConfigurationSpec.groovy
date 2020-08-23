@@ -46,7 +46,7 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test single cluster connection"() {
         given:
-        CassandraContainer cassandra = new CassandraContainer();
+        CassandraContainer cassandra = new CassandraContainer()
         cassandra.start()
         // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
@@ -80,7 +80,7 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test multiple cluster connections"() {
         given:
-        CassandraContainer cassandra = new CassandraContainer();
+        CassandraContainer cassandra = new CassandraContainer()
         cassandra.start()
 
         // tag::multiple[]
