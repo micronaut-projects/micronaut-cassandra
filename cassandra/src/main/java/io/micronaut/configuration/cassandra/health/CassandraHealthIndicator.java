@@ -33,7 +33,7 @@ import java.util.*;
  * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra.
  *
  * @author Ilkin Ashrafli
- * @since 2.1.0
+ * @since 2.2.0
  */
 @Requires(property = HealthEndpoint.PREFIX + ".cassandra.enabled", notEquals = "false")
 @Requires(beans = HealthEndpoint.class)
