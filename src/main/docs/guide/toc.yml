@@ -1,4 +1,6 @@
 introduction: Introduction
+releaseHistory: Release History
 setup: Setting up Cassandra
+health: Health Checks
 additional: Additional Notes
 repository: Repository

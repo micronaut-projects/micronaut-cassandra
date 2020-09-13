@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 /**
- * Configuration for Cassandra.
+ * Classes related to performing health checks for Cassandra.
+ *
+ * @author Ilkin Ashrafli
+ * @since 2.2.0
  */
-@Configuration
-@Requires(classes = CqlSession.class)
-package io.micronaut.configuration.cassandra;
-
-import com.datastax.oss.driver.api.core.CqlSession;
-import io.micronaut.context.annotation.Configuration;
-import io.micronaut.context.annotation.Requires;
+package io.micronaut.configuration.cassandra.health;

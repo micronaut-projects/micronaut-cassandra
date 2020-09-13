@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2019 original authors
+ * Copyright 2017-2020 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,8 @@ import java.util.List;
 public class CassandraSessionFactory implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraSessionFactory.class);
-    private List<CqlSession> sessions = new ArrayList<>(2);
-    private PropertyResolver resolver;
+    private final List<CqlSession> sessions = new ArrayList<>(2);
+    private final PropertyResolver resolver;
 
     /**
      * Default constructor.
@@ -62,19 +62,16 @@ public class CassandraSessionFactory implements AutoCloseable {
      */
     @EachBean(CassandraConfiguration.class)
     public CqlSessionBuilder session(CassandraConfiguration configuration) {
-
         try {
-            CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
+            return CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
                 ConfigFactory.invalidateCaches();
                 String prefix = configuration.getName();
                 return ConfigFactory.parseMap(this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW)).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));
-            return builder;
         } catch (Exception e) {
-            LOG.error("Failed to instantiate CQL session: " + e.getMessage(), e);
+            LOG.error(String.format("Failed to instantiate CQL session: %s", e.getMessage()), e);
             throw e;
         }
-
     }
 
     /**
@@ -97,12 +94,12 @@ public class CassandraSessionFactory implements AutoCloseable {
     @Override
     @PreDestroy
     public void close() {
-        for (CqlSession sess : sessions) {
+        for (CqlSession session : sessions) {
             try {
-                sess.close();
+                session.close();
             } catch (Exception e) {
                 if (LOG.isWarnEnabled()) {
-                    LOG.warn("Error closing data source [" + sess + "]: " + e.getMessage(), e);
+                    LOG.warn(String.format("Error closing data source [%s]: %s", session, e.getMessage()), e);
                 }
             }
         }
