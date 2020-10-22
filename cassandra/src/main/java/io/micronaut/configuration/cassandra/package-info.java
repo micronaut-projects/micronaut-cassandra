@@ -18,6 +18,7 @@
  */
 @Configuration
 @Requires(classes = CqlSession.class)
+@Requires(property = "cassandra.enabled", notEquals = StringUtils.FALSE)
 package io.micronaut.configuration.cassandra;
 
 import com.datastax.oss.driver.api.core.CqlSession;
