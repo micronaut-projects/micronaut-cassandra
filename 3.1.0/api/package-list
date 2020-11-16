@@ -1,0 +1,2 @@
+io.micronaut.configuration.cassandra
+io.micronaut.configuration.cassandra.health
