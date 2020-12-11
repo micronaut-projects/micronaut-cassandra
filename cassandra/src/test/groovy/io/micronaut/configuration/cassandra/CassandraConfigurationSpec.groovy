@@ -78,6 +78,40 @@ class CassandraConfigurationSpec extends Specification {
         applicationContext.close()
     }
 
+    void "test single cluster connection with customizer"() {
+        given:
+        CassandraContainer cassandra = new CassandraContainer()
+        cassandra.start()
+        // tag::single[]
+        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        applicationContext.environment.addPropertySource(MapPropertySource.of(
+                'test',
+                ['cassandra.default.basic.contact-points'                        : ["localhost:$cassandra.firstMappedPort"],
+                 'cassandra.customizer'            : "true"]
+        ))
+        applicationContext.start()
+        // end::single[]
+
+        expect:
+        !applicationContext.getBean(CqlSessionBuilderListener).invoked
+        applicationContext.containsBean(CassandraConfiguration)
+        applicationContext.containsBean(CqlSession)
+        applicationContext.containsBean(CqlSessionCustomizer)
+        applicationContext.getBeanDefinitions(CqlSessionCustomizer).size() == 1
+
+        when:
+        CqlSession session = applicationContext.getBean(CqlSession)
+        applicationContext.getBean(CqlSessionBuilderListener).invoked
+        Collection<LoadBalancingPolicy> policies = session.getContext().loadBalancingPolicies.values()
+
+        then:
+        ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter().get() == SampleCustomizer.LOCAL_DC
+
+        then:
+        cassandra.stop()
+        applicationContext.close()
+    }
+
     void "test multiple cluster connections"() {
         given:
         CassandraContainer cassandra = new CassandraContainer()

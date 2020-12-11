@@ -78,12 +78,17 @@ public class CassandraSessionFactory implements AutoCloseable {
      * Creates the {@link CqlSession} bean for the given configuration.
      *
      * @param builder The {@link CqlSessionBuilder}
+     * @param customizers list of {@link CqlSessionCustomizer}
      * @return A {@link CqlSession} bean
      */
     @EachBean(CqlSessionBuilder.class)
     @Bean(preDestroy = "close")
-    public CqlSession cassandraCluster(CqlSessionBuilder builder) {
-        CqlSession session = builder.build();
+    public CqlSession cassandraCluster(CqlSessionBuilder builder, List<CqlSessionCustomizer> customizers) {
+        CqlSessionBuilder sessionBuilder = builder;
+        for (CqlSessionCustomizer customizer : customizers) {
+            sessionBuilder = customizer.customize(sessionBuilder);
+        }
+        CqlSession session = sessionBuilder.build();
         this.sessions.add(session);
         return session;
     }
