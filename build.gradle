@@ -3,7 +3,7 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core" }
     }
     dependencies {
-        classpath "io.micronaut.build.internal:micronaut-gradle-plugins:3.0.0"
+        classpath "io.micronaut.build.internal:micronaut-gradle-plugins:3.0.1"
     }
 }
 
@@ -24,3 +24,4 @@ subprojects { Project subproject ->
 
 apply plugin: "io.micronaut.build.internal.docs"
 apply plugin: "io.micronaut.build.internal.dependency-updates"
+
