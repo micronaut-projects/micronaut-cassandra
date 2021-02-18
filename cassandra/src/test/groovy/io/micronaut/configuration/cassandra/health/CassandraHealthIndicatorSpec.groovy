@@ -83,13 +83,48 @@ class CassandraHealthIndicatorSpec extends Specification {
         applicationContext.close()
     }
 
-    void "test that CassandraHealthIndicator is not created when the endpoints.health.cassandra.enabled is set to false"() {
+    void "test that CassandraHealthIndicator is not created when the endpoints.health.cassandra.enabled is set to false even if the cqlsession exists"() {
         given:
+        CassandraContainer cassandraContainer = new CassandraContainer()
+        cassandraContainer.start()
+
         // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
-                ['endpoints.health.cassandra.enabled': false]
+                ['cassandra.default.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
+                 'cassandra.default.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.default.basic.load-balancing-policy.local-datacenter': 'datacenter1',
+                 'endpoints.health.cassandra.enabled': false]
+        ))
+        applicationContext.start()
+        // end::single[]
+
+        when:
+        applicationContext.getBean(CassandraHealthIndicator)
+
+
+        then:
+        thrown(NoSuchBeanException)
+
+        when:
+        CqlSession cqlSession = applicationContext.getBean(CqlSession)
+
+
+        then:
+        cqlSession != null
+
+        cleanup:
+        applicationContext.close()
+        cassandraContainer.stop()
+    }
+
+    void "test that CassandraHealthIndicator is not created when no cql session exists"() {
+        given:
+        // tag::single[]
+        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        applicationContext.environment.addPropertySource(MapPropertySource.of(
+                'test'
         ))
         applicationContext.start()
         // end::single[]
