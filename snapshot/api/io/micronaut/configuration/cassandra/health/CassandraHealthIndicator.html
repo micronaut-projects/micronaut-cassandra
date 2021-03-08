@@ -116,7 +116,7 @@ var activeTableTab = "activeTableTab";
 </dl>
 <hr>
 <br>
-<pre>@Requires(property="endpoints.health.cassandra.enabled",notEquals="false") @Requires(beans=io.micronaut.management.endpoint.health.HealthEndpoint.class)
+<pre>@Requires(property="endpoints.health.cassandra.enabled",notEquals="false") @Requires(beans={io.micronaut.management.endpoint.health.HealthEndpoint.class,com.datastax.oss.driver.api.core.CqlSession.class})
  @Singleton
 public class <span class="typeNameLabel">CassandraHealthIndicator</span>
 extends io.micronaut.management.health.indicator.AbstractHealthIndicator&lt;java.util.Map&lt;java.lang.String,java.lang.Object&gt;&gt;</pre>
