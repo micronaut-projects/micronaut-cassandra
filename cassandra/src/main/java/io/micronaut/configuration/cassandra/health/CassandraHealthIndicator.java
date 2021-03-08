@@ -36,7 +36,7 @@ import java.util.*;
  * @since 2.2.0
  */
 @Requires(property = HealthEndpoint.PREFIX + ".cassandra.enabled", notEquals = "false")
-@Requires(beans = HealthEndpoint.class)
+@Requires(beans = {HealthEndpoint.class, CqlSession.class})
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
