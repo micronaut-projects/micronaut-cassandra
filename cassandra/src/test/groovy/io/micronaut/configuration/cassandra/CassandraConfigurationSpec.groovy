@@ -70,7 +70,7 @@ class CassandraConfigurationSpec extends Specification {
         Collection<LoadBalancingPolicy> policies = session.getContext().loadBalancingPolicies.values()
 
         then:
-        ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter().get() == "ociCluster"
+        ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter() == "ociCluster"
         !session.schemaMetadataEnabled
 
         then:
@@ -104,8 +104,8 @@ class CassandraConfigurationSpec extends Specification {
         Collection<LoadBalancingPolicy> secondaryPolicies = secondaryCluster.getContext().loadBalancingPolicies.values()
 
         then:
-        ((DefaultLoadBalancingPolicy) defaultPolicies[0]).getLocalDatacenter().get() == "ociCluster"
-        ((DefaultLoadBalancingPolicy) secondaryPolicies[0]).getLocalDatacenter().get() == "ociCluster2"
+        ((DefaultLoadBalancingPolicy) defaultPolicies[0]).getLocalDatacenter() == "ociCluster"
+        ((DefaultLoadBalancingPolicy) secondaryPolicies[0]).getLocalDatacenter() == "ociCluster2"
         defaultCluster.schemaMetadataEnabled
         !secondaryCluster.schemaMetadataEnabled
 
