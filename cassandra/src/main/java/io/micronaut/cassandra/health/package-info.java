@@ -19,4 +19,4 @@
  * @author Ilkin Ashrafli
  * @since 2.2.0
  */
-package io.micronaut.configuration.cassandra.health;
+package io.micronaut.cassandra.health;
