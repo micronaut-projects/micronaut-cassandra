@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.micronaut.configuration.cassandra.health;
+package io.micronaut.cassandra.health;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
-
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.api.core.metadata.NodeState;
 import io.micronaut.context.annotation.Requires;
@@ -27,7 +26,12 @@ import io.micronaut.management.health.indicator.AbstractHealthIndicator;
 
 import javax.inject.Singleton;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra.
