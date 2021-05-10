@@ -1,2 +1,2 @@
-io.micronaut.cassandra
-io.micronaut.cassandra.health
+io.micronaut.configuration.cassandra
+io.micronaut.configuration.cassandra.health
