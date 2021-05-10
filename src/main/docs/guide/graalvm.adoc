@@ -1,0 +1,6 @@
+
+Micronaut Cassandra is compatible with https://www.graalvm.org/[GraalVM] so it is possible
+to create native images without any additional configuration.
+
+NOTE: See the section on https://docs.micronaut.io/latest/guide/index.html#graal[GraalVM] in the user guide for more
+information.
