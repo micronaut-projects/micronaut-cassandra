@@ -1,17 +1,1 @@
 The `micronaut-cassandra` module includes support for integrating Micronaut services with Cassandra.
-
-=== Release History
-
-==== 2.0.0
-
-* Upgraded cassandra driver to 4.4.0 from 3.1.0
-* Micronaut 1.3.x minimum version
-
-==== Migrating from 1.2.X to 2.X.X
-
-The Datastax 4.4.0 drive renames a lot of fields so these properties will need to be migrated over. Individuals that wish to use their existing configuration will have to stay on 1.2.X.
-
-- `cassandra.\*.contactPoint` and `cassandra.*.port` are passed to `cassandra.*.basic.contact-points` where contact-points is a list of strings in the format `<host>:<port>`
-- `cassandra.\*.MaxSchemaAgreementWaitSeconds` -> `cassandra.*.advanced.control-connection.schema-agreement.timeout`
-- `cassandra.\*.ssl` -> `cassandra.*.advanced.ssl-engine-factory = DefaultSslEngineFactory`
-- `cassandra.\*.clusterName` ->  `cassandra.*.basic.session-name`
