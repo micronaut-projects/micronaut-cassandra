@@ -1,9 +1,0 @@
-{
-  "resources":{
-  "includes":[
-    {"pattern":"\\Qcom/datastax/oss/driver/Driver.properties\\E"},
-    {"pattern":"\\Qjni/x86_64-Linux/libjffi-1.2.so\\E"}, 
-    {"pattern":"\\Qreference.conf\\E"}
-  ]},
-  "bundles":[]
-}
