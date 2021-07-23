@@ -63,7 +63,7 @@ class CassandraHealthIndicatorSpec extends Specification {
         when:
         CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
         applicationContext.getBean(CqlSessionBuilderListener).invoked
-        HealthResult result = Single.fromPublisher(healthIndicator.result).blockingGet()
+        HealthResult result = Mono.from(healthIndicator.result).block()
 
         then:
         result.status == HealthStatus.UP
