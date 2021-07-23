@@ -28,7 +28,7 @@ import io.micronaut.inject.qualifiers.Qualifiers
 import org.testcontainers.containers.CassandraContainer
 import spock.lang.Specification
 
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 class CassandraConfigurationSpec extends Specification {
 

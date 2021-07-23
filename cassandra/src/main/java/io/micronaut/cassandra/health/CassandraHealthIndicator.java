@@ -24,7 +24,7 @@ import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.net.InetSocketAddress;
 import java.util.EnumMap;
 import java.util.HashMap;
