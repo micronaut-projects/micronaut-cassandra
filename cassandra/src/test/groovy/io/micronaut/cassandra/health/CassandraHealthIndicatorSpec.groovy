@@ -26,11 +26,11 @@ import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.health.HealthStatus
 import io.micronaut.management.health.indicator.HealthResult
-import io.reactivex.Single
 import org.testcontainers.containers.CassandraContainer
+import reactor.core.publisher.Mono
 import spock.lang.Specification
 
-import javax.inject.Singleton
+import jakarta.inject.Singleton
 
 /**
  * @author Ilkin Ashrafli
@@ -63,7 +63,7 @@ class CassandraHealthIndicatorSpec extends Specification {
         when:
         CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
         applicationContext.getBean(CqlSessionBuilderListener).invoked
-        HealthResult result = Single.fromPublisher(healthIndicator.result).blockingGet()
+        HealthResult result = Mono.from(healthIndicator.result).block()
 
         then:
         result.status == HealthStatus.UP
@@ -74,7 +74,7 @@ class CassandraHealthIndicatorSpec extends Specification {
 
         when:
         cassandraContainer.stop()
-        result = Single.fromPublisher(healthIndicator.result).blockingGet()
+        result = Mono.from(healthIndicator.result).block()
 
         then:
         result.status == HealthStatus.DOWN
