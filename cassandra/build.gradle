@@ -1,3 +1,6 @@
+plugins {
+    id "io.micronaut.build.internal.module"
+}
 
 dependencies {
     annotationProcessor 'io.micronaut:micronaut-inject-java'
@@ -9,6 +12,7 @@ dependencies {
     api "com.datastax.oss:java-driver-mapper-processor:$datastaxCassandraDriverVersion"
 
     compileOnly "io.micronaut:micronaut-management"
+
     testImplementation "io.projectreactor:reactor-core"
     testImplementation 'io.micronaut:micronaut-inject-groovy'
     testImplementation("org.spockframework:spock-core:$spockVersion") {
