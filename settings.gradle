@@ -1,1 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("io.micronaut.build.shared.settings") version "5.2.1"
+}
+
 include 'cassandra'
