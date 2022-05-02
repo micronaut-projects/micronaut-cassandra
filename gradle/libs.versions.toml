@@ -1,7 +1,6 @@
 [versions]
-cassandra = "1.15.3"
 datastax-cassandra-driver = "4.11.1"
-testcontainers-spock = "1.16.3"
+testcontainers = "1.16.3"
 
 # Micronaut
 micronaut-docs = "2.0.0"
@@ -17,8 +16,8 @@ micronaut-inject-java = { module = "io.micronaut:micronaut-inject-java" }
 micronaut-management = { module = "io.micronaut:micronaut-management" }
 micronaut-test-spock = { module = "io.micronaut.test:micronaut-test-spock", version.ref = "micronaut-test" }
 
-cassandra = { module = "org.testcontainers:cassandra", version.ref = "cassandra" }
-java-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "datastax-cassandra-driver" }
-java-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "datastax-cassandra-driver" }
+datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "datastax-cassandra-driver" }
+datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "datastax-cassandra-driver" }
 reactor-core = { module = "io.projectreactor:reactor-core" }
-testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers-spock" }
+testcontainers-cassandra = { module = "org.testcontainers:cassandra", version.ref = "testcontainers" }
+testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers" }

@@ -8,8 +8,8 @@ dependencies {
 
     implementation(libs.micronaut.inject)
 
-    api(libs.java.driver.core)
-    api(libs.java.driver.mapper.processor)
+    api(libs.datastax.cassandra.driver.core)
+    api(libs.datastax.cassandra.driver.mapper.processor)
 
     compileOnly(libs.micronaut.management)
 
@@ -20,6 +20,6 @@ dependencies {
     }
     testImplementation(libs.micronaut.test.spock)
     testImplementation(libs.testcontainers.spock)
-    testImplementation(libs.cassandra)
+    testImplementation(libs.testcontainers.cassandra)
     testImplementation(libs.micronaut.management)
 }
