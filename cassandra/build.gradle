@@ -8,14 +8,14 @@ dependencies {
 
     implementation(libs.micronaut.inject)
 
-    api(libs.datastax.cassandra.driver.core)
-    api(libs.datastax.cassandra.driver.mapper.processor)
+    api(libs.managed.datastax.cassandra.driver.core)
+    api(libs.managed.datastax.cassandra.driver.mapper.processor)
 
     compileOnly(libs.micronaut.management)
 
     testImplementation(libs.reactor.core)
     testImplementation(libs.micronaut.inject.groovy)
-    testImplementation("org.spockframework:spock-core:$spockVersion") {
+    testImplementation(libs.spock.core) {
         exclude module: 'groovy-all'
     }
     testImplementation(libs.micronaut.test.spock)
