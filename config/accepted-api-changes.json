@@ -1,0 +1,52 @@
+[
+  {
+    "type": "io.micronaut.cassandra.$CassandraConfigurationDefinitionClass",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Up to Micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraConfigurationDefinitionClass",
+    "member": "Constructor io.micronaut.cassandra.$CassandraConfigurationDefinitionClass()",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactory$CassandraCluster1DefinitionClass",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactory$CassandraCluster1DefinitionClass",
+    "member": "Constructor io.micronaut.cassandra.$CassandraSessionFactory$CassandraCluster1DefinitionClass()",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactory$Session0DefinitionClass",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactory$Session0DefinitionClass",
+    "member": "Constructor io.micronaut.cassandra.$CassandraSessionFactory$Session0DefinitionClass()",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactoryDefinitionClass",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.$CassandraSessionFactoryDefinitionClass",
+    "member": "Constructor io.micronaut.cassandra.$CassandraSessionFactoryDefinitionClass()",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.health.$CassandraHealthIndicatorDefinitionClass",
+    "member": "Field $ANNOTATION_METADATA",
+    "reason": "Up to micronaut 3 and a major release"
+  },
+  {
+    "type": "io.micronaut.cassandra.health.$CassandraHealthIndicatorDefinitionClass",
+    "member": "Constructor io.micronaut.cassandra.health.$CassandraHealthIndicatorDefinitionClass()",
+    "reason": "Up to micronaut 3 and a major release"
+  }
+]
