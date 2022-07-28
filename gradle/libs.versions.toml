@@ -13,14 +13,6 @@ micronaut-test = "3.0.3"
 managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
 
-# Micronaut
-micronaut-docs-asciidoc-config-props = { module = "io.micronaut.docs:micronaut-docs-asciidoc-config-props", version.ref = "micronaut-docs" }
-micronaut-inject = { module = "io.micronaut:micronaut-inject" }
-micronaut-inject-groovy = { module = "io.micronaut:micronaut-inject-groovy" }
-micronaut-inject-java = { module = "io.micronaut:micronaut-inject-java" }
-micronaut-management = { module = "io.micronaut:micronaut-management" }
-micronaut-test-spock = { module = "io.micronaut.test:micronaut-test-spock", version.ref = "micronaut-test" }
-
 reactor-core = { module = "io.projectreactor:reactor-core" }
 testcontainers-cassandra = { module = "org.testcontainers:cassandra", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers" }

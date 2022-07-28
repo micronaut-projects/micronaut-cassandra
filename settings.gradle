@@ -11,3 +11,8 @@ plugins {
 
 rootProject.name = 'cassandra-parent'
 include 'cassandra'
+include 'cassandra-bom'
+
+micronautBuild {
+    importMicronautCatalog()
+}

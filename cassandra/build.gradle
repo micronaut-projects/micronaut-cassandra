@@ -3,23 +3,20 @@ plugins {
 }
 
 dependencies {
-    annotationProcessor(libs.micronaut.inject.java)
-    annotationProcessor(libs.micronaut.docs.asciidoc.config.props)
-
-    implementation(libs.micronaut.inject)
+    implementation(mn.micronaut.inject)
 
     api(libs.managed.datastax.cassandra.driver.core)
     api(libs.managed.datastax.cassandra.driver.mapper.processor)
 
-    compileOnly(libs.micronaut.management)
+    compileOnly(mn.micronaut.management)
 
     testImplementation(libs.reactor.core)
-    testImplementation(libs.micronaut.inject.groovy)
+    testImplementation(mn.micronaut.inject.groovy)
     testImplementation(libs.spock.core) {
         exclude module: 'groovy-all'
     }
-    testImplementation(libs.micronaut.test.spock)
+    testImplementation(mn.micronaut.test.spock)
     testImplementation(libs.testcontainers.spock)
     testImplementation(libs.testcontainers.cassandra)
-    testImplementation(libs.micronaut.management)
+    testImplementation(mn.micronaut.management)
 }
