@@ -4,8 +4,15 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 plugins {
     id("io.micronaut.build.shared.settings") version "5.3.14"
 }
+
 rootProject.name = 'cassandra-parent'
 include 'cassandra'
+include 'cassandra-bom'
+
+micronautBuild {
+    importMicronautCatalog()
+}

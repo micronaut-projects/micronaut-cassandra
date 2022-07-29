@@ -1,0 +1,14 @@
+[versions]
+managed-datastax-cassandra-driver = "4.14.1"
+
+testcontainers = "1.16.3"
+spock = "2.1-groovy-3.0"
+
+[libraries]
+managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
+managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
+
+reactor-core = { module = "io.projectreactor:reactor-core" }
+
+testcontainers-cassandra = { module = "org.testcontainers:cassandra", version.ref = "testcontainers" }
+testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers" }
