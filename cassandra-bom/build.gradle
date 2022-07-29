@@ -4,9 +4,6 @@ plugins {
 
 // First BOM release, this can be removed after a BOM is out
 micronautBuild {
-    binaryCompatibility {
-        enabled.set(false)
-    }
     // Required as a workaround to https://github.com/micronaut-projects/micronaut-build/pull/376
     tasks.named("checkVersionCatalogCompatibility") { onlyIf { false } }
 }
