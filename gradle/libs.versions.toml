@@ -1,5 +1,5 @@
 [versions]
-managed-datastax-cassandra-driver = "4.14.1"
+managed-datastax-cassandra-driver = "4.15.0"
 
 testcontainers = "1.17.3"
 spock = "2.1-groovy-3.0"
