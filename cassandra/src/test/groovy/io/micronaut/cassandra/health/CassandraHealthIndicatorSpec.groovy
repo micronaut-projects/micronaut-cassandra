@@ -124,7 +124,7 @@ class CassandraHealthIndicatorSpec extends Specification {
         // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
         applicationContext.environment.addPropertySource(MapPropertySource.of(
-                'test'
+                'test', Collections.emptyMap()
         ))
         applicationContext.start()
         // end::single[]

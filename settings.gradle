@@ -6,12 +6,19 @@ pluginManagement {
 }
 
 plugins {
-    id("io.micronaut.build.shared.settings") version "5.3.15"
+    id("io.micronaut.build.shared.settings") version "6.0.2"
 }
 
 rootProject.name = 'cassandra-parent'
 include 'cassandra'
 include 'cassandra-bom'
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
+    }
+}
 
 micronautBuild {
     importMicronautCatalog()
