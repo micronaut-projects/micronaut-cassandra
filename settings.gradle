@@ -13,13 +13,7 @@ rootProject.name = 'cassandra-parent'
 include 'cassandra'
 include 'cassandra-bom'
 
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-        maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
-    }
-}
-
 micronautBuild {
+    addSnapshotRepository()
     importMicronautCatalog()
 }
