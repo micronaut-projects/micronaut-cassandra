@@ -1,7 +1,7 @@
 [versions]
 managed-datastax-cassandra-driver = "4.15.0"
 
-testcontainers = "1.17.5"
+testcontainers = "1.17.6"
 spock = "2.1-groovy-3.0"
 
 [libraries]
