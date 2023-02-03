@@ -18,7 +18,7 @@ Micronaut will create a https://docs.datastax.com/en/drivers/java/4.4/com/datast
 can be then injected into any other Micronaut bean.
 
 .Supply Single Configuration
-[source,yaml]
+[configuration]
 ----
 cassandra:
   default:
@@ -37,7 +37,7 @@ cassandra:
 Multiple Cluster instances can be configured as follows:
 
 .Supply Multiple Configuration
-[source,yaml]
+[configuration]
 ----
 cassandra:
   default:
