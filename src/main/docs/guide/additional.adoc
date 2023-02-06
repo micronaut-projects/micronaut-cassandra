@@ -1,4 +1,4 @@
-The Datastax Cassandra driver is configured using https://github.com/lightbend/config[lightbend/config] under the field `datastax-java-driver.\*`. 
+The Datastax Cassandra driver is configured using https://github.com/lightbend/config[lightbend/config] under the field `datastax-java-driver.\*`.
 
 The equivalent bean created for micronaut is mapped under the `cassandra.*.*`. fields provided in your `application.conf`, but the bean will fallback on the `datastax-java-driver.\*` values if they are present.
 
@@ -14,8 +14,9 @@ datastax-java-driver {
     }
 }
 ----
-.micronaut bean configuration - application.yml
-[source,yaml]
+
+.micronaut bean configuration
+[configuration]
 ----
 cassandra:
   default:
