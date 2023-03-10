@@ -1,7 +1,7 @@
 [versions]
 managed-datastax-cassandra-driver = "4.15.0"
 
-groovy = "4.0.6"
+groovy = "4.0.9"
 micronaut-test = "4.0.0-SNAPSHOT"
 spock = "2.3-groovy-4.0"
 testcontainers = "1.17.6"
