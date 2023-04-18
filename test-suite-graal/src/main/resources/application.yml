@@ -1,0 +1,17 @@
+micronaut:
+  application:
+    name: cassandra
+cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:${cassandra.port}"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+test-resources:
+  containers:
+    cassandra:
+      startup-timeout: 600s
+      image-name: cassandra
+      exposed-ports:
+        - cassandra.port: 9042
