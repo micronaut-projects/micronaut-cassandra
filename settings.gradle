@@ -12,6 +12,7 @@ plugins {
 rootProject.name = 'cassandra-parent'
 include 'cassandra'
 include 'cassandra-bom'
+include 'test-suite-graal'
 
 micronautBuild {
     addSnapshotRepository()
