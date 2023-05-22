@@ -1,12 +1,12 @@
 [versions]
 managed-datastax-cassandra-driver = "4.15.0"
-micronaut = "4.0.0-M2"
+micronaut = "4.0.0-M4"
 micronaut-docs = "2.0.0"
-micronaut-test = "4.0.0-M2"
+micronaut-test = "4.0.0-M4"
 groovy = "4.0.11"
 spock = "2.3-groovy-4.0"
 testcontainers = "1.18.1"
-micronaut-gradle-plugin = "4.0.0-M1"
+micronaut-gradle-plugin = "4.0.0-M3"
 
 [libraries]
 managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
