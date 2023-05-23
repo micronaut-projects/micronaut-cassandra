@@ -18,4 +18,5 @@ micronautBuild {
     addSnapshotRepository()
     useStandardizedProjectNames = true
     importMicronautCatalog()
+    importMicronautCatalog("micronaut-logging")
 }
