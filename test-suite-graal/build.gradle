@@ -28,7 +28,7 @@ dependencies {
     implementation mn.micronaut.jackson.databind
     implementation project(':micronaut-cassandra')
     implementation mn.snakeyaml
-    runtimeOnly mn.logback.classic
+    runtimeOnly mnLogging.logback.classic
 }
 
 graalvmNative {
