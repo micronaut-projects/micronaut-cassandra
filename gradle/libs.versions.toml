@@ -1,6 +1,6 @@
 [versions]
 managed-datastax-cassandra-driver = "4.15.0"
-micronaut = "4.0.0-M4"
+micronaut = "4.0.0-M5"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.0-M4"
 micronaut-logging = "1.0.0-M2"
