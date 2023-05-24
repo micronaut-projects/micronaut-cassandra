@@ -10,6 +10,9 @@ testcontainers = "1.18.1"
 micronaut-gradle-plugin = "4.0.0-M3"
 
 [libraries]
+# Core
+micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+
 micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
