@@ -15,7 +15,6 @@ include 'cassandra-bom'
 include 'test-suite-graal'
 
 micronautBuild {
-    addSnapshotRepository()
     useStandardizedProjectNames = true
     importMicronautCatalog()
     importMicronautCatalog("micronaut-logging")
