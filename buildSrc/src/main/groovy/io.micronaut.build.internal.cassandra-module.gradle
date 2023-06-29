@@ -3,3 +3,9 @@ plugins {
     id "io.micronaut.build.internal.cassandra-base"
 }
 
+micronautBuild {
+    binaryCompatibility {
+        baselineVersion = "6.0.0-M7"
+        enabled = true
+    }
+}
