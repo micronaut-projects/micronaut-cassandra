@@ -1,6 +1,0 @@
-[
-{
-  "name":"java.lang.UnsatisfiedLinkError",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
-}
-]
