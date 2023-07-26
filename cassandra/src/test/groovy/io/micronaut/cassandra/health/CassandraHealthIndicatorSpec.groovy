@@ -27,6 +27,7 @@ import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.health.HealthStatus
 import io.micronaut.management.health.indicator.HealthResult
 import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
@@ -40,7 +41,7 @@ class CassandraHealthIndicatorSpec extends Specification {
 
     void "test cassandra health indicator"() {
         given:
-        CassandraContainer cassandraContainer = new CassandraContainer()
+        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
         cassandraContainer.start()
 
         // tag::single[]
@@ -85,7 +86,7 @@ class CassandraHealthIndicatorSpec extends Specification {
 
     void "test that CassandraHealthIndicator is not created when the endpoints.health.cassandra.enabled is set to false even if the cqlsession exists"() {
         given:
-        CassandraContainer cassandraContainer = new CassandraContainer()
+        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
         cassandraContainer.start()
 
         // tag::single[]
