@@ -5,7 +5,7 @@ plugins {
 
 mainClassName = "helloworld.Application"
 micronaut {
-    version "4.0.0-M1"
+    importMicronautPlatform = false
     testRuntime "junit5"
     enableNativeImage false
     processing {
@@ -29,12 +29,6 @@ dependencies {
     implementation project(':micronaut-cassandra')
     implementation mn.snakeyaml
     runtimeOnly mnLogging.logback.classic
-}
 
-graalvmNative {
-    binaries {
-        all {
-            buildArgs.add("--trace-class-initialization=com.datastax.oss.driver.internal.core.util.Dependency")
-        }
-    }
+    testImplementation(mnTest.micronaut.test.junit5)
 }
