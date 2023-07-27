@@ -13,10 +13,4 @@ dependencies {
     testImplementation(libs.testcontainers.spock)
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(mn.micronaut.management)
-
-    testImplementation(mn.micronaut.http.client)
-    testImplementation(mn.micronaut.http.server)
-
-    testRuntimeOnly(mn.micronaut.jackson.databind)
-    testRuntimeOnly(mn.micronaut.http.server.netty)
 }
