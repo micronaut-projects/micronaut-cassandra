@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 original authors
+ * Copyright 2017-2023 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.metadata.Node;
 import com.datastax.oss.driver.api.core.metadata.NodeState;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
@@ -41,6 +42,7 @@ import java.util.UUID;
  */
 @Requires(property = HealthEndpoint.PREFIX + ".cassandra.enabled", notEquals = "false")
 @Requires(beans = {HealthEndpoint.class, CqlSession.class})
+@Introspected
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
@@ -49,7 +51,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
     /**
      * Default constructor.
      *
-     * @param cqlSession The The cassandra {@link CqlSession} to query for details
+     * @param cqlSession The cassandra {@link CqlSession} to query for details
      */
     public CassandraHealthIndicator(final CqlSession cqlSession) {
         this.cqlSession = cqlSession;
