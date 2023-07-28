@@ -76,6 +76,7 @@ class CassandraConfigurationSpec extends Specification {
         then:
         cassandra.stop()
         applicationContext.close()
+        session.isClosed()
     }
 
     void "test multiple cluster connections"() {
@@ -112,6 +113,8 @@ class CassandraConfigurationSpec extends Specification {
         cleanup:
         cassandra.stop()
         applicationContext.close()
+        defaultCluster.isClosed()
+        secondaryCluster.isClosed()
     }
 
     @Singleton
