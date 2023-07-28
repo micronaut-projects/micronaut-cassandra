@@ -82,6 +82,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="annotations">@Requires(property="endpoints.health.cassandra.enabled",notEquals="false") @Requires(beans={io.micronaut.management.endpoint.health.HealthEndpoint.class,com.datastax.oss.driver.api.core.CqlSession.class})
+@Introspected
 @Singleton
 </span><span class="modifiers">public class </span><span class="element-name type-name-label">CassandraHealthIndicator</span>
 <span class="extends-implements">extends io.micronaut.management.health.indicator.AbstractHealthIndicator&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&gt;&gt;</span></div>
@@ -169,7 +170,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Default constructor.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>cqlSession</code> - The The cassandra <code>CqlSession</code> to query for details</dd>
+<dd><code>cqlSession</code> - The cassandra <code>CqlSession</code> to query for details</dd>
 </dl>
 </section>
 </li>
