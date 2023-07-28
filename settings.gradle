@@ -13,6 +13,7 @@ rootProject.name = 'cassandra-parent'
 include 'cassandra'
 include 'cassandra-bom'
 include 'test-suite-graal'
+include 'tests:cassandra-jackson'
 
 micronautBuild {
     useStandardizedProjectNames = true
