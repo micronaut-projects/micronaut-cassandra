@@ -25,6 +25,7 @@ import io.micronaut.context.event.BeanCreatedEvent
 import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.health.HealthStatus
+import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.management.health.indicator.HealthResult
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
@@ -60,6 +61,55 @@ class CassandraHealthIndicatorSpec extends Specification {
         !applicationContext.getBean(CqlSessionBuilderListener).invoked
         applicationContext.containsBean(CassandraConfiguration)
         applicationContext.containsBean(CqlSession)
+
+        when:
+        CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
+        applicationContext.getBean(CqlSessionBuilderListener).invoked
+        HealthResult result = Mono.from(healthIndicator.result).block()
+
+        then:
+        result.status == HealthStatus.UP
+        Map<String, Object> detailsMap = (Map<String, Object>) result.details
+        detailsMap.containsKey("nodes_count")
+        detailsMap.containsKey("nodes_state")
+        detailsMap.get("session").toString().startsWith("OPEN")
+
+        when:
+        cassandraContainer.stop()
+        result = Mono.from(healthIndicator.result).block()
+
+        then:
+        result.status == HealthStatus.DOWN
+
+        cleanup:
+        applicationContext.close()
+    }
+
+    void "test cassandra health indicator with multiple configs"() {
+        given:
+        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
+        cassandraContainer.start()
+
+        // tag::single[]
+        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        applicationContext.environment.addPropertySource(MapPropertySource.of(
+                'test',
+                ['cassandra.default.basic.contact-points'                          : ["localhost:$cassandraContainer.firstMappedPort"],
+                 'cassandra.default.advanced.metadata.schema.enabled'              : false,
+                 'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'datacenter1',
+                 'cassandra.secondary.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
+                 'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
+                 'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'datacenter2'
+                ]
+        ))
+        applicationContext.start()
+        // end::single[]
+
+        expect:
+        !applicationContext.getBean(CqlSessionBuilderListener).invoked
+        applicationContext.containsBean(CassandraConfiguration)
+        applicationContext.containsBean(CqlSession, Qualifiers.byName("default"))
+        applicationContext.containsBean(CqlSession, Qualifiers.byName("secondary"))
 
         when:
         CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
