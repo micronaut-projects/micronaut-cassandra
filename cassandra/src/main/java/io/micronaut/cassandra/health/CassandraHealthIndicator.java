@@ -65,7 +65,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
         Optional<String> opClusterName = cqlSession.getMetadata().getClusterName();
         opClusterName.ifPresent(s -> detail.put("cluster_name", s));
         Optional<CqlIdentifier> opKeyspace = cqlSession.getKeyspace();
-        opKeyspace.ifPresent(cqlIdentifier -> detail.put("keyspace", cqlIdentifier));
+        opKeyspace.ifPresent(cqlIdentifier -> detail.put("keyspace", cqlIdentifier.asInternal()));
         detail.put("nodes_count", nodes.keySet().size());
 
         Map<UUID, Map<String, Object>> nodesMap = new HashMap<>();
