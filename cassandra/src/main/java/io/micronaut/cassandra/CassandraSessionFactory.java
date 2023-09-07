@@ -19,7 +19,6 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
 import com.typesafe.config.ConfigFactory;
-import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.core.naming.conventions.StringConvention;
@@ -81,7 +80,6 @@ public class CassandraSessionFactory implements AutoCloseable {
      * @return A {@link CqlSession} bean
      */
     @EachBean(CqlSessionBuilder.class)
-    @Bean(preDestroy = "close")
     public CqlSession cassandraCluster(CqlSessionBuilder builder) {
         CqlSession session = builder.build();
         this.sessions.add(session);
