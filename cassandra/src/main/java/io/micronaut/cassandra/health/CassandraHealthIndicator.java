@@ -24,18 +24,20 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
-
 import jakarta.inject.Singleton;
+
 import java.net.InetSocketAddress;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra.
+ * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra, handling multiple Configurations.
  *
  * @author Ilkin Ashrafli
  * @since 2.2.0
@@ -46,19 +48,25 @@ import java.util.UUID;
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
-    private final CqlSession cqlSession;
+    private final List<CqlSession> cqlSessions;
 
     /**
      * Default constructor.
      *
-     * @param cqlSession The cassandra {@link CqlSession} to query for details
+     * @param cqlSessions The list of cassandra {@link CqlSession} to query for details
      */
-    public CassandraHealthIndicator(final CqlSession cqlSession) {
-        this.cqlSession = cqlSession;
+    public CassandraHealthIndicator(final List<CqlSession> cqlSessions) {
+        this.cqlSessions = cqlSessions;
     }
 
     @Override
     protected Map<String, Object> getHealthInformation() {
+        healthStatus = null;
+        return cqlSessions.stream().collect(Collectors.toMap(
+            CqlSession::getName, this::getHealthInformation, (a, b) -> b, LinkedHashMap::new));
+    }
+
+    private Map<String, Object> getHealthInformation(CqlSession cqlSession) {
         Map<String, Object> detail = new LinkedHashMap<>();
         Map<UUID, Node> nodes = cqlSession.getMetadata().getNodes();
         detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
@@ -96,9 +104,12 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             }
         }
         detail.put("nodes_state", nodeStateMap);
-        if (nodesMap.size() > 0) {
+        if (!nodesMap.isEmpty()) {
             detail.put("nodes (10 max.)", nodesMap);
         }
+
+        // this needs work, it says status is whatever the status of the last node tested
+        // which seems clearly wrong
         healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
         return detail;
     }
