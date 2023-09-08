@@ -68,7 +68,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
     }
 
     /**
-     * Constructs this heatl indicator using all configured {@link CqlSession} beans.
+     * Constructs this health indicator using all configured {@link CqlSession} beans.
      *
      * @param cqlSessions The list of cassandra {@link CqlSession} to query for details
      */
