@@ -24,9 +24,11 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -37,9 +39,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra, handling multiple Configurations.
+ * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra, handling multiple configurations.
+ * <p>
+ * If any node of any {@link CqlSession} bean – that is not closed – is {@link NodeState#UP},
+ * then health status is {@link HealthStatus#UP}, otherwise {@link HealthStatus#DOWN}.
  *
  * @author Ilkin Ashrafli
+ * @author Dean Wette
  * @since 2.2.0
  */
 @Requires(property = HealthEndpoint.PREFIX + ".cassandra.enabled", notEquals = "false")
@@ -53,15 +59,26 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
     /**
      * Default constructor.
      *
+     * @param cqlSession The cassandra {@link CqlSession} to query for details
+     * @deprecated changed to support multiple configurations (i.e. collections of {@link CqlSession} beans)
+     */
+    @Deprecated(since = "6.1.0", forRemoval = true)
+    public CassandraHealthIndicator(final CqlSession cqlSession) {
+        this.cqlSessions = Collections.singletonList(cqlSession);
+    }
+
+    /**
+     * Constructs this heatl indicator using all configured {@link CqlSession} beans.
+     *
      * @param cqlSessions The list of cassandra {@link CqlSession} to query for details
      */
+    @Inject
     public CassandraHealthIndicator(final List<CqlSession> cqlSessions) {
         this.cqlSessions = cqlSessions;
     }
 
     @Override
     protected Map<String, Object> getHealthInformation() {
-        healthStatus = null;
         return cqlSessions.stream().collect(Collectors.toMap(
             CqlSession::getName, this::getHealthInformation, (a, b) -> b, LinkedHashMap::new));
     }
@@ -84,7 +101,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             UUID uuid = entry.getKey();
             Node node = entry.getValue();
             nodeStateMap.merge(node.getState(), 1, Integer::sum);
-            if (node.getState() == NodeState.UP) {
+            if (!cqlSession.isClosed() && node.getState() == NodeState.UP) {
                 up = true;
             }
             if (i++ < 10) {
@@ -108,8 +125,6 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             detail.put("nodes (10 max.)", nodesMap);
         }
 
-        // this needs work, it says status is whatever the status of the last node tested
-        // which seems clearly wrong
         healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
         return detail;
     }

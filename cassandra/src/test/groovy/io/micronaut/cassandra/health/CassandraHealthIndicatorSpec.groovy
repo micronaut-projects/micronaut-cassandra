@@ -27,12 +27,11 @@ import io.micronaut.context.exceptions.NoSuchBeanException
 import io.micronaut.health.HealthStatus
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.management.health.indicator.HealthResult
+import jakarta.inject.Singleton
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
 import spock.lang.Specification
-
-import jakarta.inject.Singleton
 
 /**
  * @author Ilkin Ashrafli
@@ -42,11 +41,11 @@ class CassandraHealthIndicatorSpec extends Specification {
 
     void "test cassandra health indicator"() {
         given:
-        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
+        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
         cassandraContainer.start()
 
         // tag::single[]
-        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        ApplicationContext applicationContext = new DefaultApplicationContext('test')
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
                 ['cassandra.default.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
@@ -65,16 +64,15 @@ class CassandraHealthIndicatorSpec extends Specification {
         CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
         applicationContext.getBean(CqlSessionBuilderListener).invoked
         HealthResult result = Mono.from(healthIndicator.result).block()
+        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) result.details
 
         then:
         result.status == HealthStatus.UP
-        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) result.details
         detailsMap.size() == 1
-        detailsMap.keySet().each { {
-            Map<String, Object> details = detailsMap.get(it)
-            details.containsKey("nodes_count")
-            details.containsKey("nodes_state")
-            details.get("session").toString().startsWith("OPEN")
+        detailsMap.values().each { {
+            it['nodes_count']
+            it['nodes_state']
+            it['session'] == 'OPEN'
         }}
 
         when:
@@ -90,10 +88,10 @@ class CassandraHealthIndicatorSpec extends Specification {
 
     void "test cassandra health indicator with multiple configs"() {
         given:
-        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
+        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
         cassandraContainer.start()
 
-        ApplicationContext applicationContext = new DefaultApplicationContext("test")
+        ApplicationContext applicationContext = new DefaultApplicationContext('test')
         applicationContext.environment.addPropertySource(MapPropertySource.of(
                 'test',
                 ['cassandra.default.basic.contact-points'                          : ["localhost:$cassandraContainer.firstMappedPort"],
@@ -114,9 +112,9 @@ class CassandraHealthIndicatorSpec extends Specification {
         applicationContext.containsBean(CassandraConfiguration)
 
         when:
-        CqlSession defaultSession = applicationContext.getBean(CqlSession, Qualifiers.byName("default"))
-        CqlSession secondarySession = applicationContext.getBean(CqlSession, Qualifiers.byName("secondary"))
-        CqlSession tertiarySession = applicationContext.getBean(CqlSession, Qualifiers.byName("tertiary"))
+        CqlSession defaultSession = applicationContext.getBean(CqlSession, Qualifiers.byName('default'))
+        CqlSession secondarySession = applicationContext.getBean(CqlSession, Qualifiers.byName('secondary'))
+        CqlSession tertiarySession = applicationContext.getBean(CqlSession, Qualifiers.byName('tertiary'))
 
         then:
         defaultSession
@@ -127,89 +125,33 @@ class CassandraHealthIndicatorSpec extends Specification {
         CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
         applicationContext.getBean(CqlSessionBuilderListener).invoked
         HealthResult result = Mono.from(healthIndicator.result).block()
+        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) result.details
 
         then:
         result.status == HealthStatus.UP
-        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) result.details
         detailsMap.size() == 3
-        detailsMap.keySet().each { {
-            Map<String, Object> details = detailsMap.get(it)
-            details.containsKey("nodes_count")
-            details.containsKey("nodes_state")
-            details.get("session").toString().startsWith("OPEN")
+        detailsMap.values().each { {
+            it['nodes_count']
+            it['nodes_state']
+            it['session'] == 'OPEN'
         }}
 
         when:
-        cassandraContainer.stop()
-        result = Mono.from(healthIndicator.result).block()
-
-        then:
-        result.status == HealthStatus.DOWN
-
-        cleanup:
-        applicationContext.close()
-    }
-
-    void "test cassandra health indicator with multiple configs and one session dies"() {
-        given:
-        CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
-        cassandraContainer.start()
-
-        ApplicationContext applicationContext = new DefaultApplicationContext("test")
-        applicationContext.environment.addPropertySource(MapPropertySource.of(
-                'test',
-                ['cassandra.default.basic.contact-points'                          : ["localhost:$cassandraContainer.firstMappedPort"],
-                 'cassandra.default.advanced.metadata.schema.enabled'              : false,
-                 'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'datacenter1',
-                 'cassandra.secondary.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
-                 'cassandra.secondary.advanced.metadata.schema.enabled'            : false,
-                 'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'datacenter2',
-                 'cassandra.tertiary.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
-                 'cassandra.tertiary.advanced.metadata.schema.enabled'            : false,
-                 'cassandra.tertiary.basic.load-balancing-policy.local-datacenter': 'datacenter3'
-                ]
-        ))
-        applicationContext.start()
-
-        expect:
-        !applicationContext.getBean(CqlSessionBuilderListener).invoked
-        applicationContext.containsBean(CassandraConfiguration)
-
-        when:
-        CqlSession defaultSession = applicationContext.getBean(CqlSession, Qualifiers.byName("default"))
-        CqlSession secondarySession = applicationContext.getBean(CqlSession, Qualifiers.byName("secondary"))
-        CqlSession tertiarySession = applicationContext.getBean(CqlSession, Qualifiers.byName("tertiary"))
-
-        then:
-        defaultSession
-        secondarySession
-        tertiarySession
-
-        when:
-        CassandraHealthIndicator healthIndicator = applicationContext.getBean(CassandraHealthIndicator)
-        applicationContext.getBean(CqlSessionBuilderListener).invoked
-        HealthResult result = Mono.from(healthIndicator.result).block()
-
-        then:
-        result.status == HealthStatus.UP
-        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) result.details
-        detailsMap.size() == 3
-        detailsMap.keySet().each { {
-            Map<String, Object> details = detailsMap.get(it)
-            details.containsKey("nodes_count")
-            details.containsKey("nodes_state")
-            details.get("session").toString().startsWith("OPEN")
-        }}
-
-        when:
+        defaultSession.close()
+        secondarySession.close()
         tertiarySession.close()
+        cassandraContainer.stop()
+
         result = Mono.from(healthIndicator.result).block()
+        detailsMap = (Map<String, Map<String, Object>>) result.details
 
         then:
         result.status == HealthStatus.DOWN
+        detailsMap.values().each { {
+            it['session'] == 'CLOSED'
+        }}
 
         cleanup:
-        cassandraContainer.stop()
         applicationContext.close()
     }
 
