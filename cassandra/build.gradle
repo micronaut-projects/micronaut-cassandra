@@ -5,8 +5,10 @@ plugins {
 dependencies {
     api(libs.managed.datastax.cassandra.driver.core)
     api(libs.managed.datastax.cassandra.driver.mapper.processor)
+    api(libs.managed.datastax.cassandra.driver.metrics.micrometer)
 
     compileOnly(mn.micronaut.management)
+    implementation(mnMicrometer.micronaut.micrometer.core)
 
     testImplementation(mnTest.micronaut.test.spock)
     testImplementation(mn.reactor)

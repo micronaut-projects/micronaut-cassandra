@@ -18,5 +18,5 @@ include 'tests:cassandra-jackson'
 micronautBuild {
     useStandardizedProjectNames = true
     importMicronautCatalog()
-    importMicronautCatalog("micronaut-logging")
+    importMicronautCatalog("micronaut-micrometer")
 }
