@@ -25,6 +25,12 @@ import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Singleton;
 
+/**
+ * Binds Micronaut Micrometer to Cassandra `CqlSessionBuilder`.
+ *
+ * @author Dean Wette
+ * @since 6.1.0
+ */
 @RequiresMetrics
 @Requires(beans = CqlSessionBuilder.class)
 @Singleton

@@ -8,11 +8,12 @@ dependencies {
     api(libs.managed.datastax.cassandra.driver.metrics.micrometer)
 
     compileOnly(mn.micronaut.management)
-    implementation(mnMicrometer.micronaut.micrometer.core)
+    compileOnly(mnMicrometer.micronaut.micrometer.core)
 
     testImplementation(mnTest.micronaut.test.spock)
     testImplementation(mn.reactor)
     testImplementation(libs.testcontainers.spock)
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(mn.micronaut.management)
+    testImplementation(mnMicrometer.micronaut.micrometer.core)
 }
