@@ -29,8 +29,6 @@ import spock.lang.Specification
 
 import java.util.concurrent.TimeUnit
 
-import static org.junit.jupiter.api.Assertions.assertTrue
-
 @Property(name = 'spec.name', value = 'CassandraMetricsSpec')
 @MicronautTest
 class CassandraMetricsSpec extends Specification {

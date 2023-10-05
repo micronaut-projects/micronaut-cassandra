@@ -19,13 +19,13 @@ micronaut {
 }
 
 dependencies {
-    implementation projects.micronautCassandra
-    implementation mn.micronaut.context
-    implementation mn.micronaut.jackson.databind
-    implementation mn.snakeyaml
-    runtimeOnly mnLogging.logback.classic
-
+    testImplementation projects.micronautCassandra
+    testImplementation mn.micronaut.context
+    testImplementation mn.micronaut.jackson.databind
+    testImplementation mn.snakeyaml
     testImplementation(mnTest.micronaut.test.junit5)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
+
+    testRuntimeOnly mnLogging.logback.classic
 }
 
