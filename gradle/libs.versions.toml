@@ -1,23 +1,28 @@
 [versions]
-managed-datastax-cassandra-driver = "4.17.0"
 micronaut = "4.1.9"
 micronaut-platform = "4.0.4"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.1"
 micronaut-logging = "1.1.2"
+micronaut-micrometer = "5.0.1"
+micronaut-gradle-plugin = "4.1.1"
+
+managed-datastax-cassandra-driver = "4.17.0"
+
 groovy = "4.0.14"
 spock = "2.3-groovy-4.0"
 testcontainers = "1.19.1"
-micronaut-gradle-plugin = "4.1.1"
 
 [libraries]
 # Core
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+micronaut-micrometer = { module = "io.micronaut.micrometer:micronaut-micrometer-bom", version.ref = "micronaut-micrometer" }
 
-micronaut-logging = { module = "io.micronaut.logging:micronaut-logging-bom", version.ref = "micronaut-logging" }
 managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
+managed-datastax-cassandra-driver-metrics-micrometer = { module = "com.datastax.oss:java-driver-metrics-micrometer", version.ref = "managed-datastax-cassandra-driver" }
 
 testcontainers-cassandra = { module = "org.testcontainers:cassandra", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers" }
+
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }
