@@ -9,6 +9,7 @@ import jakarta.inject.Singleton
 @Requires(property = 'spec.name', value = 'CassandraMetricsSpec')
 @Singleton
 class CassandraRepository {
+
     CqlSession cqlSession
 
     CassandraRepository(CqlSession cqlSession) {

@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
 @Property(name = 'spec.name', value = 'CassandraMetricsSpec')
 @MicronautTest
 class CassandraMetricsSpec extends Specification {
+
     @Inject
     BeanContext context
 
