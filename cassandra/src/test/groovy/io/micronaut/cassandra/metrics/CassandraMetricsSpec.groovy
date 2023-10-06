@@ -33,21 +33,18 @@ class CassandraMetricsSpec extends Specification {
         CassandraContainer cassandra = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
         cassandra.start()
 
-        ApplicationContext applicationContext = new DefaultApplicationContext("test")
-        applicationContext.environment.addPropertySource(MapPropertySource.of('test',
-                [
-                    'micronaut.metrics.enabled'                                       : true,
-                    'cassandra.default.basic.contact-points'                          : ["localhost:$cassandra.firstMappedPort"],
-                    'cassandra.default.advanced.metrics.factory.class'                : 'MicrometerMetricsFactory',
-                    'cassandra.default.advanced.metrics.session.enabled'              : [ 'connected-nodes', 'cql-requests' ],
-                    'cassandra.default.basic.load-balancing-policy.local-datacenter'  : 'datacenter1',
-                    'cassandra.secondary.basic.contact-points'                        : ["localhost:$cassandra.firstMappedPort"],
-                    'cassandra.secondary.advanced.metrics.factory.class'              : 'MicrometerMetricsFactory',
-                    'cassandra.secondary.advanced.metrics.session.enabled'            : [ 'connected-nodes', 'cql-requests' ],
-                    'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'datacenter2',
-                ]
-        ))
-        applicationContext.start()
+        ApplicationContext applicationContext = ApplicationContext.run(
+                'micronaut.metrics.enabled': true,
+                'cassandra.default.basic.contact-points': ["localhost:$cassandra.firstMappedPort"],
+                'cassandra.default.advanced.metrics.factory.class': 'MicrometerMetricsFactory',
+                'cassandra.default.advanced.metrics.session.enabled': ['connected-nodes', 'cql-requests'],
+                'cassandra.default.basic.load-balancing-policy.local-datacenter': 'datacenter1',
+                'cassandra.secondary.basic.contact-points': ["localhost:$cassandra.firstMappedPort"],
+                'cassandra.secondary.advanced.metrics.factory.class': 'MicrometerMetricsFactory',
+                'cassandra.secondary.advanced.metrics.session.enabled': ['connected-nodes', 'cql-requests'],
+                'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'datacenter2',
+                'test'
+        )
 
         when:
         CqlSession defaultCluster = applicationContext.getBean(CqlSession)
