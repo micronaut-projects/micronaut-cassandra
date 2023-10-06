@@ -1,0 +1,37 @@
+The Cassandra DataStax Java Driver includes https://docs.datastax.com/en/developer/java-driver/latest/manual/core/metrics/[support for Micrometer metrics]. To enable integration with Micronaut Micrometer include the following dependency:
+
+dependency:micronaut-micrometer-core[groupId="io.micronaut.micrometer"]
+
+There are some additional requirements for settings in your application configuration
+
+[configuration]
+----
+micronaut:
+  metrics:
+    enabled: true
+cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:${cassandra.port}"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+    advanced:
+      metrics:
+        factory:
+          class: MicrometerMetricsFactory
+        session:
+          enabled:
+            - connected-nodes
+            - cql-requests
+            - bytes-sent
+            - bytes-received
+        node:
+          enabled:
+            - connected-nodes
+            - cql-requests
+----
+
+- `micronaut.metrics.enabled` set to true enables binding Cassandra to Micronaut Micrometer
+- `advanced.factory.factory.class` is specified with the value `MicrometerMetricsFactory`. The DataStax driver supports other metrics libraries, and this property indicates which one to use.
+- `advanced.metrics.session.enabled` and `advanced.metrics.node.enabled` accept a list of the metrics exposed by the DataStax driver. The possible values are documented in the driver https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/[configuration reference].
