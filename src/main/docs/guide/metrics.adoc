@@ -28,10 +28,9 @@ cassandra:
             - bytes-received
         node:
           enabled:
-            - connected-nodes
             - cql-requests
 ----
 
 - `micronaut.metrics.enabled` set to true enables binding Cassandra to Micronaut Micrometer
 - `advanced.factory.factory.class` is specified with the value `MicrometerMetricsFactory`. The DataStax driver supports other metrics libraries, and this property indicates which one to use.
-- `advanced.metrics.session.enabled` and `advanced.metrics.node.enabled` accept a list of the metrics exposed by the DataStax driver. The possible values are documented in the driver https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/[configuration reference].
+- `advanced.metrics.session.enabled` and `advanced.metrics.node.enabled` accept a list of the metrics exposed by the DataStax driver. All possible values are documented in the driver https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/[configuration reference].
