@@ -33,18 +33,10 @@ class CassandraMetricsSpec extends Specification {
         meterRegistry
 
         when:
-        List<Meter> connectedNodesGauges = meterRegistry.meters.stream().filter {
-            it.id.name.contains("connected-nodes")
-        }.toList()
-        List<Meter> cqlRequestsTimers = meterRegistry.meters.stream().filter {
-            it.id.name.contains("cql-requests")
-        }.toList()
-        List<Meter> bytesSentMeters = meterRegistry.meters.stream().filter {
-            it.id.name.contains("bytes-sent")
-        }.toList()
-        List<Meter> bytesReceivedMeters = meterRegistry.meters.stream().filter {
-            it.id.name.contains("bytes-received")
-        }.toList()
+        List<Meter> connectedNodesGauges = meterRegistry.meters.findAll { it.id.name.contains("connected-nodes") }
+        List<Meter> cqlRequestsTimers = meterRegistry.meters.findAll { it.id.name.contains("cql-requests") }
+        List<Meter> bytesSentMeters = meterRegistry.meters.findAll { it.id.name.contains("bytes-sent") }
+        List<Meter> bytesReceivedMeters = meterRegistry.meters.findAll { it.id.name.contains("bytes-received") }
 
         then:
         connectedNodesGauges.size() == 2
