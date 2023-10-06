@@ -12,6 +12,4 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="com.github.dockerjava.zerodep.shaded.org" level="off" />
-<!--    <logger name="io.micronaut.context.env" level="trace" />-->
 </configuration>
