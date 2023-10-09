@@ -71,7 +71,7 @@ public class CassandraSessionFactory implements AutoCloseable {
                 // translate indexed properties for list values from Micronaut array index notation (i.e. foo[0]=bar)
                 // to Datastax driver decimal notation (i.e. foo.0=bar)
                 properties = properties.entrySet().stream()
-                    .collect((Collectors.toMap(e-> e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue)));
+                    .collect((Collectors.toMap(e -> e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue)));
                 return ConfigFactory.parseMap(properties).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));
         } catch (Exception e) {
