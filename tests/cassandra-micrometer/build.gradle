@@ -21,7 +21,6 @@ dependencies {
     testImplementation projects.micronautCassandra
     testImplementation mn.micronaut.context
     testImplementation mn.micronaut.jackson.databind
-    testImplementation mn.snakeyaml
     testImplementation(mnTest.micronaut.test.junit5)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
 
