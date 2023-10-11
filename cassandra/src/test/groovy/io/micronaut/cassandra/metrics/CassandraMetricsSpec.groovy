@@ -21,10 +21,12 @@ class CassandraMetricsSpec extends Specification {
         ApplicationContext applicationContext = ApplicationContext.run(
                 'micronaut.metrics.enabled': true,
                 'cassandra.default.basic.contact-points': ["localhost:$cassandra.firstMappedPort"],
+                'cassandra.default.basic.session-name': 'defaultSession',
                 'cassandra.default.advanced.metrics.factory.class': 'MicrometerMetricsFactory',
                 'cassandra.default.advanced.metrics.session.enabled': ['connected-nodes', 'cql-requests'],
                 'cassandra.default.basic.load-balancing-policy.local-datacenter': 'datacenter1',
                 'cassandra.secondary.basic.contact-points': ["localhost:$cassandra.firstMappedPort"],
+                'cassandra.secondary.basic.session-name': 'secondarySession',
                 'cassandra.secondary.advanced.metrics.factory.class': 'MicrometerMetricsFactory',
                 'cassandra.secondary.advanced.metrics.session.enabled': ['connected-nodes', 'cql-requests'],
                 'cassandra.secondary.basic.load-balancing-policy.local-datacenter': 'datacenter2',

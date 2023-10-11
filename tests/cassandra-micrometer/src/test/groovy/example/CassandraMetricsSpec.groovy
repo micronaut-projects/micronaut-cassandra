@@ -47,12 +47,12 @@ class CassandraMetricsSpec extends Specification {
         when:
         CassandraRepository repository = context.getBean(CassandraRepository)
         repository.getInfo()
-        Timer cqlRequests0 = meterRegistry.timer("s0.cql-requests")
-        Timer cqlRequests1 = meterRegistry.timer("s1.cql-requests")
-        Counter bytesSentS0 = meterRegistry.counter("s0.bytes-sent")
-        Counter bytesSentS1 = meterRegistry.counter("s1.bytes-sent")
-        Counter bytesReceivedS0 = meterRegistry.counter("s0.bytes-received")
-        Counter bytesReceivedS1 = meterRegistry.counter("s1.bytes-received")
+        Timer cqlRequests0 = meterRegistry.timer("defaultSession.cql-requests")
+        Timer cqlRequests1 = meterRegistry.timer("secondarySession.cql-requests")
+        Counter bytesSentS0 = meterRegistry.counter("defaultSession.bytes-sent")
+        Counter bytesSentS1 = meterRegistry.counter("secondarySession.bytes-sent")
+        Counter bytesReceivedS0 = meterRegistry.counter("defaultSession.bytes-received")
+        Counter bytesReceivedS1 = meterRegistry.counter("secondarySession.bytes-received")
 
         then:
         cqlRequests0.totalTime(TimeUnit.MILLISECONDS) > 0.0
