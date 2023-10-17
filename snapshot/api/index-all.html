@@ -50,7 +50,7 @@ loadScripts(document, 'script');</script>
 <div class="header">
 <h1>Index</h1>
 </div>
-<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:S">S</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a>
+<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:S">S</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a>
 <h2 class="title" id="I:C">C</h2>
 <dl class="index">
 <dt><a href="io/micronaut/cassandra/CassandraSessionFactory.html#cassandraCluster(com.datastax.oss.driver.api.core.CqlSessionBuilder)" class="member-name-link">cassandraCluster(CqlSessionBuilder)</a> - Method in class io.micronaut.cassandra.<a href="io/micronaut/cassandra/CassandraSessionFactory.html" title="class in io.micronaut.cassandra">CassandraSessionFactory</a></dt>
@@ -76,6 +76,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html#%3Cinit%3E(java.util.List)" class="member-name-link">CassandraHealthIndicator(List&lt;CqlSession&gt;)</a> - Constructor for class io.micronaut.cassandra.health.<a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html" title="class in io.micronaut.cassandra.health">CassandraHealthIndicator</a></dt>
 <dd>
 <div class="block">Constructs this health indicator using all configured <code>CqlSession</code> beans.</div>
+</dd>
+<dt><a href="io/micronaut/cassandra/metrics/CassandraMetricsBinder.html" class="type-name-link" title="class in io.micronaut.cassandra.metrics">CassandraMetricsBinder</a> - Class in <a href="io/micronaut/cassandra/metrics/package-summary.html">io.micronaut.cassandra.metrics</a></dt>
+<dd>
+<div class="block">Binds Micronaut Micrometer to Cassandra `CqlSessionBuilder`.</div>
+</dd>
+<dt><a href="io/micronaut/cassandra/metrics/CassandraMetricsBinder.html#%3Cinit%3E(io.micronaut.context.BeanProvider)" class="member-name-link">CassandraMetricsBinder(BeanProvider&lt;MeterRegistry&gt;)</a> - Constructor for class io.micronaut.cassandra.metrics.<a href="io/micronaut/cassandra/metrics/CassandraMetricsBinder.html" title="class in io.micronaut.cassandra.metrics">CassandraMetricsBinder</a></dt>
+<dd>
+<div class="block">Default constructor.</div>
 </dd>
 <dt><a href="io/micronaut/cassandra/CassandraSessionFactory.html" class="type-name-link" title="class in io.micronaut.cassandra">CassandraSessionFactory</a> - Class in <a href="io/micronaut/cassandra/package-summary.html">io.micronaut.cassandra</a></dt>
 <dd>
@@ -109,6 +117,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Classes related to performing health checks for Cassandra.</div>
 </dd>
+<dt><a href="io/micronaut/cassandra/metrics/package-summary.html">io.micronaut.cassandra.metrics</a> - package io.micronaut.cassandra.metrics</dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 class="title" id="I:O">O</h2>
+<dl class="index">
+<dt><a href="io/micronaut/cassandra/metrics/CassandraMetricsBinder.html#onCreated(io.micronaut.context.event.BeanCreatedEvent)" class="member-name-link">onCreated(BeanCreatedEvent&lt;CqlSessionBuilder&gt;)</a> - Method in class io.micronaut.cassandra.metrics.<a href="io/micronaut/cassandra/metrics/CassandraMetricsBinder.html" title="class in io.micronaut.cassandra.metrics">CassandraMetricsBinder</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
 <dl class="index">
@@ -122,7 +137,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates the <code>CqlSessionBuilder</code> bean for the given configuration.</div>
 </dd>
 </dl>
-<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:S">S</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a></main>
+<a href="#I:C">C</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:S">S</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a><span class="vertical-separator">|</span><a href="constant-values.html">Constant&nbsp;Field&nbsp;Values</a></main>
 </div>
 </div>
 </body>

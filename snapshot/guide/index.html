@@ -52,11 +52,13 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#health"><strong>4</strong><span>Health Checks</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>5</strong><span>Additional Notes</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#metrics"><strong>5</strong><span>Micrometer Integration</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>6</strong><span>GraalVM support</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>6</strong><span>Additional Notes</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -95,11 +97,13 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-health"><a href="#health"><strong>4</strong><span>Health Checks</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>5</strong><span>Additional Notes</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-metrics"><a href="#metrics"><strong>5</strong><span>Micrometer Integration</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>6</strong><span>GraalVM support</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>6</strong><span>Additional Notes</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>7</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -384,7 +388,245 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
 <p>See the section on the <a href="https://docs.micronaut.io/latest/guide/index.html#healthEndpoint">Health Endpoint</a> for more information.</p>
 </div>
 
-<h1 id="additional"><a class="anchor" href="#additional"></a>5 Additional Notes</h1>
+<h1 id="metrics"><a class="anchor" href="#metrics"></a>5 Micrometer Integration</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/metrics.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Cassandra DataStax Java Driver includes <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/core/metrics/">support for Micrometer metrics</a>. To enable integration with Micronaut Micrometer include the following dependency:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;io.micronaut.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micronaut-micrometer-core&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>and:</p>
+</div>
+<div class="paragraph">
+<p>        <div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-kotlin hljs" data-lang="gradle">implementation(<span class="hljs-string">"com.datastax.oss:java-driver-metrics-micrometer")</span></code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="maven">&lt;dependency&gt;
+    &lt;groupId&gt;com.datastax.oss&lt;/groupId&gt;
+    &lt;artifactId&gt;java-driver-metrics-micrometer&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div></p>
+</div>
+<div class="paragraph">
+<p>There are some additional requirements for settings in your application configuration</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">micronaut.metrics.enabled=true
+cassandra.default.basic.contact-points[0]=127.0.0.1:${cassandra.port}
+cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1
+cassandra.default.advanced.metrics.factory.class=MicrometerMetricsFactory
+cassandra.default.advanced.metrics.session.enabled[0]=connected-nodes
+cassandra.default.advanced.metrics.session.enabled[1]=cql-requests
+cassandra.default.advanced.metrics.session.enabled[2]=bytes-sent
+cassandra.default.advanced.metrics.session.enabled[3]=bytes-received
+cassandra.default.advanced.metrics.node.enabled[0]=cql-requests</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">micronaut:
+  metrics:
+    enabled: true
+cassandra:
+  default:
+    basic:
+      contact-points:
+        - "127.0.0.1:${cassandra.port}"
+      load-balancing-policy:
+        local-datacenter: datacenter1
+    advanced:
+      metrics:
+        factory:
+          class: MicrometerMetricsFactory
+        session:
+          enabled:
+            - connected-nodes
+            - cql-requests
+            - bytes-sent
+            - bytes-received
+        node:
+          enabled:
+            - cql-requests</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut]
+  [micronaut.metrics]
+    enabled=true
+[cassandra]
+  [cassandra.default]
+    [cassandra.default.basic]
+      contact-points=[
+        "127.0.0.1:${cassandra.port}"
+      ]
+      [cassandra.default.basic.load-balancing-policy]
+        local-datacenter="datacenter1"
+    [cassandra.default.advanced]
+      [cassandra.default.advanced.metrics]
+        [cassandra.default.advanced.metrics.factory]
+          class="MicrometerMetricsFactory"
+        [cassandra.default.advanced.metrics.session]
+          enabled=[
+            "connected-nodes",
+            "cql-requests",
+            "bytes-sent",
+            "bytes-received"
+          ]
+        [cassandra.default.advanced.metrics.node]
+          enabled=[
+            "cql-requests"
+          ]</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">micronaut {
+  metrics {
+    enabled = true
+  }
+}
+cassandra {
+  'default' {
+    basic {
+      contactPoints = ["127.0.0.1:${cassandra.port}"]
+      loadBalancingPolicy {
+        localDatacenter = "datacenter1"
+      }
+    }
+    advanced {
+      metrics {
+        factory {
+          'class' = "MicrometerMetricsFactory"
+        }
+        session {
+          enabled = ["connected-nodes", "cql-requests", "bytes-sent", "bytes-received"]
+        }
+        node {
+          enabled = ["cql-requests"]
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  micronaut {
+    metrics {
+      enabled = true
+    }
+  }
+  cassandra {
+    default {
+      basic {
+        contact-points = ["127.0.0.1:${cassandra.port}"]
+        load-balancing-policy {
+          local-datacenter = "datacenter1"
+        }
+      }
+      advanced {
+        metrics {
+          factory {
+            class = "MicrometerMetricsFactory"
+          }
+          session {
+            enabled = ["connected-nodes", "cql-requests", "bytes-sent", "bytes-received"]
+          }
+          node {
+            enabled = ["cql-requests"]
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "micronaut": {
+    "metrics": {
+      "enabled": true
+    }
+  },
+  "cassandra": {
+    "default": {
+      "basic": {
+        "contact-points": ["127.0.0.1:${cassandra.port}"],
+        "load-balancing-policy": {
+          "local-datacenter": "datacenter1"
+        }
+      },
+      "advanced": {
+        "metrics": {
+          "factory": {
+            "class": "MicrometerMetricsFactory"
+          },
+          "session": {
+            "enabled": ["connected-nodes", "cql-requests", "bytes-sent", "bytes-received"]
+          },
+          "node": {
+            "enabled": ["cql-requests"]
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>micronaut.metrics.enabled</code> set to true enables binding Cassandra to Micronaut Micrometer</p>
+</li>
+<li>
+<p><code>advanced.factory.factory.class</code> is specified with the value <code>MicrometerMetricsFactory</code>. The DataStax driver supports other metrics libraries, and this property indicates which one to use.</p>
+</li>
+<li>
+<p><code>advanced.metrics.session.enabled</code> and <code>advanced.metrics.node.enabled</code> accept a list of the metrics exposed by the DataStax driver. All possible values are documented in the driver <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/">configuration reference</a>.</p>
+</li>
+</ul>
+</div>
+
+<h1 id="additional"><a class="anchor" href="#additional"></a>6 Additional Notes</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/additional.adoc"'>
@@ -427,7 +669,7 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
 </div>
 </div>
 
-<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>6 GraalVM support</h1>
+<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>7 GraalVM support</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/graalvm.adoc"'>
@@ -454,7 +696,7 @@ information.
 </table>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>7 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>8 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/repository.adoc"'>

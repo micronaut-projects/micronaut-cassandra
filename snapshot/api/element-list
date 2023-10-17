@@ -1,2 +1,3 @@
 io.micronaut.cassandra
 io.micronaut.cassandra.health
+io.micronaut.cassandra.metrics
