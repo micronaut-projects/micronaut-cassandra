@@ -1,13 +1,13 @@
 plugins {
-    id "groovy"
-    id "io.micronaut.test-resources"
-    id "io.micronaut.build.internal.cassandra-tests"
+    groovy
+    id("io.micronaut.test-resources")
+    id("io.micronaut.build.internal.cassandra-tests")
 }
 
 micronaut {
     version.set(libs.versions.micronaut.platform.get())
     runtime("netty")
-    testRuntime "spock"
+    testRuntime("spock")
     processing {
         incremental(true)
         annotations("example.*")
@@ -18,13 +18,12 @@ micronaut {
 }
 
 dependencies {
-    testImplementation projects.micronautCassandra
-    testImplementation mn.micronaut.context
-    testImplementation mn.micronaut.jackson.databind
+    testImplementation(projects.micronautCassandra)
+    testImplementation(mn.micronaut.context)
+    testImplementation(mn.micronaut.jackson.databind)
     testImplementation(mnTest.micronaut.test.junit5)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
-
-    testRuntimeOnly mnLogging.logback.classic
     testImplementation(libs.managed.datastax.cassandra.driver.metrics.micrometer)
+    testRuntimeOnly(mnLogging.logback.classic)
 }
 
