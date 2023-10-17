@@ -31,6 +31,7 @@ loadScripts(document, 'script');</script>
 <li>Package</li>
 <li>Class</li>
 <li><a href="overview-tree.html">Tree</a></li>
+<li><a href="deprecated-list.html">Deprecated</a></li>
 <li class="nav-bar-cell1-rev">Index</li>
 <li><a href="help-doc.html#index">Help</a></li>
 </ul>
@@ -64,11 +65,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html" class="type-name-link" title="class in io.micronaut.cassandra.health">CassandraHealthIndicator</a> - Class in <a href="io/micronaut/cassandra/health/package-summary.html">io.micronaut.cassandra.health</a></dt>
 <dd>
-<div class="block">A <code>HealthIndicator</code> for Cassandra.</div>
+<div class="block">A <code>HealthIndicator</code> for Cassandra, handling multiple configurations.</div>
 </dd>
 <dt><a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html#%3Cinit%3E(com.datastax.oss.driver.api.core.CqlSession)" class="member-name-link">CassandraHealthIndicator(CqlSession)</a> - Constructor for class io.micronaut.cassandra.health.<a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html" title="class in io.micronaut.cassandra.health">CassandraHealthIndicator</a></dt>
 <dd>
-<div class="block">Default constructor.</div>
+<div class="deprecation-block"><span class="deprecated-label">Deprecated, for removal: This API element is subject to removal in a future version.</span>
+<div class="deprecation-comment">changed to support multiple configurations (i.e. collections of <code>CqlSession</code> beans)</div>
+</div>
+</dd>
+<dt><a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html#%3Cinit%3E(java.util.List)" class="member-name-link">CassandraHealthIndicator(List&lt;CqlSession&gt;)</a> - Constructor for class io.micronaut.cassandra.health.<a href="io/micronaut/cassandra/health/CassandraHealthIndicator.html" title="class in io.micronaut.cassandra.health">CassandraHealthIndicator</a></dt>
+<dd>
+<div class="block">Constructs this health indicator using all configured <code>CqlSession</code> beans.</div>
 </dd>
 <dt><a href="io/micronaut/cassandra/CassandraSessionFactory.html" class="type-name-link" title="class in io.micronaut.cassandra">CassandraSessionFactory</a> - Class in <a href="io/micronaut/cassandra/package-summary.html">io.micronaut.cassandra</a></dt>
 <dd>

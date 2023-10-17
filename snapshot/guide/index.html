@@ -254,33 +254,115 @@ can be then injected into any other Micronaut bean.</p>
 
 <div class="paragraph">
 <p>When the <code>cassandra</code> module is activated a <a href="../api/io/micronaut/configuration/cassandra/health/CassandraHealthIndicator.html">CassandraHealthIndicator</a> is
-activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a>
-interface resolving the health of the Cassandra cluster.</p>
+activated resulting in the <code>/health</code> endpoint and <a href="https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html">CurrentHealthStatus</a> interface resolving the health of the Cassandra cluster. The details show session status for each configured <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> bean.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">"cassandra": {
-  "status": "UP",
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "name": "cassandra",
   "details": {
-    "session": "OPEN",
-    "cluster_name": "Test Cluster",
-    "nodes_count": 1,
-    "nodes_state": {
-      "UP": 1
-    }
-    "nodes (10 max.)": {
-      "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
-        "endpoint": "localhost/0:0:0:0:0:0:0:1:32834",
-        "broadcast_address": "/172.17.0.3",
-        "state": "UP",
-        "distance": "LOCAL",
-        "open_connections": "2",
-        "cassandra_version": "3.11.2",
-        "datacenter": "datacenter1",
-        "rack": "rack1",
-        "uptime_ms": "1593462452206",
-        "is_reconnecting": "false"
+    "s0": {
+      "session": "OPEN",
+      "cluster_name": "Test Cluster",
+      "nodes_count": 1,
+      "nodes_state": {
+        "UP": 1
+      },
+      "nodes (10 max.)": {
+        "b9a3f593-5051-4552-a443-b2b3db1abcfe": {
+          "endpoint": {},
+          "open_connections": 2,
+          "rack": "rack1",
+          "distance": "LOCAL",
+          "uptime_ms": 1694194386645,
+          "datacenter": "datacenter1",
+          "is_reconnecting": false,
+          "state": "UP",
+          "broadcast_address": {
+            "MCGlobal": false,
+            "MCLinkLocal": false,
+            "MCNodeLocal": false,
+            "MCOrgLocal": false,
+            "MCSiteLocal": false,
+            "address": [-84, 18, 0, 3],
+            "anyLocalAddress": false,
+            "canonicalHostName": "172.18.0.3",
+            "hostAddress": "172.18.0.3",
+            "hostName": "172.18.0.3",
+            "linkLocalAddress": false,
+            "multicastAddress": false,
+            "siteLocalAddress": true,
+            "loopbackAddress": false
+          },
+          "cassandra_version": {
+            "major": 4,
+            "minor": 1,
+            "patch": 3,
+            "DSEPatch": -1,
+            "buildLabel": null,
+            "preReleaseLabels": null
+          }
+        }
       }
+    },
+    "s1": {
+      "session": "OPEN",
+      "cluster_name": "Test Cluster",
+      "nodes_count": 1,
+      "nodes_state": {
+        "UP": 1
+      },
+      "nodes (10 max.)": {
+        "b9a3f593-5051-4552-a443-b2b3db1abcfe": {
+          "endpoint": {},
+          "open_connections": 1,
+          "rack": "rack1",
+          "distance": "IGNORED",
+          "uptime_ms": 1694194387117,
+          "datacenter": "datacenter1",
+          "is_reconnecting": false,
+          "state": "UP",
+          "broadcast_address": {
+            "MCGlobal": false,
+            "MCLinkLocal": false,
+            "MCNodeLocal": false,
+            "MCOrgLocal": false,
+            "MCSiteLocal": false,
+            "address": [-84, 18, 0, 3],
+            "anyLocalAddress": false,
+            "canonicalHostName": "172.18.0.3",
+            "hostAddress": "172.18.0.3",
+            "hostName": "172.18.0.3",
+            "linkLocalAddress": false,
+            "multicastAddress": false,
+            "siteLocalAddress": true,
+            "loopbackAddress": false
+          },
+          "cassandra_version": {
+            "major": 4,
+            "minor": 1,
+            "patch": 3,
+            "DSEPatch": -1,
+            "buildLabel": null,
+            "preReleaseLabels": null
+          }
+        }
+      }
+    }
+  },
+  "status": {
+    "name": "UP",
+    "description": {
+      "empty": true,
+      "present": false
+    },
+    "operational": {
+      "empty": false,
+      "present": true
+    },
+    "severity": {
+      "empty": true,
+      "present": false
     }
   }
 }</code></pre>
@@ -318,7 +400,7 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
 <p>The equivalent bean created for micronaut is mapped under the <code>cassandra.<strong>.</strong></code>. fields provided in your <code>application.conf</code>, but the bean will fallback on the <code>datastax-java-driver.\*</code> values if they are present.</p>
 </div>
 <div class="paragraph">
-<p>These config values are provided to the   <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the <a href="https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java">DefaultDriverOption enum</a>.</p>
+<p>These config values are provided to the <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> under the hood. Datastax does not provide a class that maps to all the various possible config keys, but a full list of values that can be provided can be found in the <a href="https://github.com/datastax/java-driver/blob/4.x/core/src/main/java/com/datastax/oss/driver/api/core/config/DefaultDriverOption.java">DefaultDriverOption enum</a>.</p>
 </div>
 <div class="listingblock">
 <div class="title">datastax configuration under <code>lightbend/config</code> - application.conf</div>
