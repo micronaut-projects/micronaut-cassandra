@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Creates cassandra cluster for each configuration bean.
@@ -65,7 +67,12 @@ public class CassandraSessionFactory implements AutoCloseable {
             return CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
                 ConfigFactory.invalidateCaches();
                 String prefix = configuration.getName();
-                return ConfigFactory.parseMap(this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW)).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
+                Map<String, Object> properties = this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW);
+                // translate indexed properties for list values from Micronaut array index notation (i.e. foo[0]=bar)
+                // to Datastax driver decimal notation (i.e. foo.0=bar)
+                properties = properties.entrySet().stream()
+                    .collect((Collectors.toMap(e -> e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue)));
+                return ConfigFactory.parseMap(properties).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));
         } catch (Exception e) {
             LOG.error(String.format("Failed to instantiate CQL session: %s", e.getMessage()), e);

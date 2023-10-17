@@ -9,14 +9,17 @@ plugins {
     id("io.micronaut.build.shared.settings") version "6.5.7"
 }
 
+enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
+
 rootProject.name = 'cassandra-parent'
 include 'cassandra'
 include 'cassandra-bom'
 include 'test-suite-graal'
 include 'tests:cassandra-jackson'
+include 'test-suite-cassandra-micrometer'
 
 micronautBuild {
     useStandardizedProjectNames = true
     importMicronautCatalog()
-    importMicronautCatalog("micronaut-logging")
+    importMicronautCatalog("micronaut-micrometer")
 }
