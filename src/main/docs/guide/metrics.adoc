@@ -2,6 +2,10 @@ The Cassandra DataStax Java Driver includes https://docs.datastax.com/en/develop
 
 dependency:micronaut-micrometer-core[groupId="io.micronaut.micrometer"]
 
+and:
+
+dependency:java-driver-metrics-micrometer[groupId="com.datastax.oss"]
+
 There are some additional requirements for settings in your application configuration
 
 [configuration]
