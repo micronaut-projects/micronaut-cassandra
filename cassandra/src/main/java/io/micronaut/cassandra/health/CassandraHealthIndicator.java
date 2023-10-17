@@ -24,20 +24,28 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
-
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra.
+ * A {@link io.micronaut.management.health.indicator.HealthIndicator} for Cassandra, handling multiple configurations.
+ * <p>
+ * If any node of any {@link CqlSession} bean – that is not closed – is {@link NodeState#UP},
+ * then health status is {@link HealthStatus#UP}, otherwise {@link HealthStatus#DOWN}.
  *
  * @author Ilkin Ashrafli
+ * @author Dean Wette
  * @since 2.2.0
  */
 @Requires(property = HealthEndpoint.PREFIX + ".cassandra.enabled", notEquals = "false")
@@ -46,26 +54,43 @@ import java.util.UUID;
 @Singleton
 public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String, Object>> {
 
-    private final CqlSession cqlSession;
+    private final List<CqlSession> cqlSessions;
 
     /**
      * Default constructor.
      *
      * @param cqlSession The cassandra {@link CqlSession} to query for details
+     * @deprecated changed to support multiple configurations (i.e. collections of {@link CqlSession} beans)
      */
+    @Deprecated(since = "6.1.0", forRemoval = true)
     public CassandraHealthIndicator(final CqlSession cqlSession) {
-        this.cqlSession = cqlSession;
+        this.cqlSessions = Collections.singletonList(cqlSession);
+    }
+
+    /**
+     * Constructs this health indicator using all configured {@link CqlSession} beans.
+     *
+     * @param cqlSessions The list of cassandra {@link CqlSession} to query for details
+     */
+    @Inject
+    public CassandraHealthIndicator(final List<CqlSession> cqlSessions) {
+        this.cqlSessions = cqlSessions;
     }
 
     @Override
     protected Map<String, Object> getHealthInformation() {
+        return cqlSessions.stream().collect(Collectors.toMap(
+            CqlSession::getName, this::getHealthInformation, (a, b) -> b, LinkedHashMap::new));
+    }
+
+    private Map<String, Object> getHealthInformation(CqlSession cqlSession) {
         Map<String, Object> detail = new LinkedHashMap<>();
         Map<UUID, Node> nodes = cqlSession.getMetadata().getNodes();
         detail.put("session", cqlSession.isClosed() ? "CLOSED" : "OPEN");
         Optional<String> opClusterName = cqlSession.getMetadata().getClusterName();
         opClusterName.ifPresent(s -> detail.put("cluster_name", s));
         Optional<CqlIdentifier> opKeyspace = cqlSession.getKeyspace();
-        opKeyspace.ifPresent(cqlIdentifier -> detail.put("keyspace", cqlIdentifier));
+        opKeyspace.ifPresent(cqlIdentifier -> detail.put("keyspace", cqlIdentifier.asInternal()));
         detail.put("nodes_count", nodes.keySet().size());
 
         Map<UUID, Map<String, Object>> nodesMap = new HashMap<>();
@@ -76,7 +101,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             UUID uuid = entry.getKey();
             Node node = entry.getValue();
             nodeStateMap.merge(node.getState(), 1, Integer::sum);
-            if (node.getState() == NodeState.UP) {
+            if (!cqlSession.isClosed() && node.getState() == NodeState.UP) {
                 up = true;
             }
             if (i++ < 10) {
@@ -96,9 +121,10 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
             }
         }
         detail.put("nodes_state", nodeStateMap);
-        if (nodesMap.size() > 0) {
+        if (!nodesMap.isEmpty()) {
             detail.put("nodes (10 max.)", nodesMap);
         }
+
         healthStatus = up ? HealthStatus.UP : HealthStatus.DOWN;
         return detail;
     }

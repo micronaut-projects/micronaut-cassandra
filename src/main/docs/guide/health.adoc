@@ -1,31 +1,113 @@
 When the `cassandra` module is activated a api:io.micronaut.configuration.cassandra.health.CassandraHealthIndicator[] is
-activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus]
-interface resolving the health of the Cassandra cluster.
+activated resulting in the `/health` endpoint and https://docs.micronaut.io/latest/api/io/micronaut/health/CurrentHealthStatus.html[CurrentHealthStatus] interface resolving the health of the Cassandra cluster. The details show session status for each configured https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html[CqlSession] bean.
 
 [source,json]
 ----
-"cassandra": {
-  "status": "UP",
+{
+  "name": "cassandra",
   "details": {
-    "session": "OPEN",
-    "cluster_name": "Test Cluster",
-    "nodes_count": 1,
-    "nodes_state": {
-      "UP": 1
-    }
-    "nodes (10 max.)": {
-      "4a9e6e53-7eed-4c1f-b497-4f93715b2b04": {
-        "endpoint": "localhost/0:0:0:0:0:0:0:1:32834",
-        "broadcast_address": "/172.17.0.3",
-        "state": "UP",
-        "distance": "LOCAL",
-        "open_connections": "2",
-        "cassandra_version": "3.11.2",
-        "datacenter": "datacenter1",
-        "rack": "rack1",
-        "uptime_ms": "1593462452206",
-        "is_reconnecting": "false"
+    "s0": {
+      "session": "OPEN",
+      "cluster_name": "Test Cluster",
+      "nodes_count": 1,
+      "nodes_state": {
+        "UP": 1
+      },
+      "nodes (10 max.)": {
+        "b9a3f593-5051-4552-a443-b2b3db1abcfe": {
+          "endpoint": {},
+          "open_connections": 2,
+          "rack": "rack1",
+          "distance": "LOCAL",
+          "uptime_ms": 1694194386645,
+          "datacenter": "datacenter1",
+          "is_reconnecting": false,
+          "state": "UP",
+          "broadcast_address": {
+            "MCGlobal": false,
+            "MCLinkLocal": false,
+            "MCNodeLocal": false,
+            "MCOrgLocal": false,
+            "MCSiteLocal": false,
+            "address": [-84, 18, 0, 3],
+            "anyLocalAddress": false,
+            "canonicalHostName": "172.18.0.3",
+            "hostAddress": "172.18.0.3",
+            "hostName": "172.18.0.3",
+            "linkLocalAddress": false,
+            "multicastAddress": false,
+            "siteLocalAddress": true,
+            "loopbackAddress": false
+          },
+          "cassandra_version": {
+            "major": 4,
+            "minor": 1,
+            "patch": 3,
+            "DSEPatch": -1,
+            "buildLabel": null,
+            "preReleaseLabels": null
+          }
+        }
       }
+    },
+    "s1": {
+      "session": "OPEN",
+      "cluster_name": "Test Cluster",
+      "nodes_count": 1,
+      "nodes_state": {
+        "UP": 1
+      },
+      "nodes (10 max.)": {
+        "b9a3f593-5051-4552-a443-b2b3db1abcfe": {
+          "endpoint": {},
+          "open_connections": 1,
+          "rack": "rack1",
+          "distance": "IGNORED",
+          "uptime_ms": 1694194387117,
+          "datacenter": "datacenter1",
+          "is_reconnecting": false,
+          "state": "UP",
+          "broadcast_address": {
+            "MCGlobal": false,
+            "MCLinkLocal": false,
+            "MCNodeLocal": false,
+            "MCOrgLocal": false,
+            "MCSiteLocal": false,
+            "address": [-84, 18, 0, 3],
+            "anyLocalAddress": false,
+            "canonicalHostName": "172.18.0.3",
+            "hostAddress": "172.18.0.3",
+            "hostName": "172.18.0.3",
+            "linkLocalAddress": false,
+            "multicastAddress": false,
+            "siteLocalAddress": true,
+            "loopbackAddress": false
+          },
+          "cassandra_version": {
+            "major": 4,
+            "minor": 1,
+            "patch": 3,
+            "DSEPatch": -1,
+            "buildLabel": null,
+            "preReleaseLabels": null
+          }
+        }
+      }
+    }
+  },
+  "status": {
+    "name": "UP",
+    "description": {
+      "empty": true,
+      "present": false
+    },
+    "operational": {
+      "empty": false,
+      "present": true
+    },
+    "severity": {
+      "empty": true,
+      "present": false
     }
   }
 }
