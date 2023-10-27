@@ -83,9 +83,6 @@ public class CassandraSessionFactory implements AutoCloseable {
     /*
         Cassandra's Datastax java driver is rather intolerant of Micronaut configuration properties,
         so they need to be dealt with specially to pass to the driver.
-
-        TODO: document this and add information to user documentation
-        TODO: add support for
     */
     private Map<String, Object> dataStaxProperties(String prefix, Environment environment) {
         final Map<String, Object> configProperties = this.resolver
@@ -101,7 +98,7 @@ public class CassandraSessionFactory implements AutoCloseable {
                 //     CASSANDRA_DEFAULT_BASIC_SESSION-NAME -> cassandra.default.basic.session-name
                 // and put in configProperties, overriding existing properties (env overrides app config)
                 .forEach(e -> configProperties.put(e.getKey().replace(cassandraPrefix, "")
-                    .toLowerCase().replaceAll("_", "."), e.getValue()));
+                    .toLowerCase().replace("_", "."), e.getValue()));
         });
 
         // finally, the Datastax java driver is intolerant of Micronaut indexed properties,
