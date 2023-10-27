@@ -1,11 +1,11 @@
 [versions]
-micronaut = "4.1.9"
+micronaut = "4.1.10"
 micronaut-platform = "4.1.4"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.2"
 micronaut-logging = "1.1.2"
 micronaut-micrometer = "5.0.1"
-micronaut-gradle-plugin = "4.1.1"
+micronaut-gradle-plugin = "4.1.2"
 
 managed-datastax-cassandra-driver = "4.17.0"
 
