@@ -23,7 +23,6 @@ import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.env.Environment;
 import io.micronaut.context.env.MapPropertySource;
-import io.micronaut.context.env.PropertySource;
 import io.micronaut.core.naming.conventions.StringConvention;
 import io.micronaut.core.value.PropertyResolver;
 import jakarta.annotation.PreDestroy;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -88,26 +86,27 @@ public class CassandraSessionFactory implements AutoCloseable {
         final Map<String, Object> configProperties = this.resolver
             .getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW);
 
-        Optional<PropertySource> env = environment.getPropertySources().stream().filter(strings -> strings.getName().equals("env")).findFirst();
-        env.ifPresent(envVars -> {
-            var cassandraPrefix = String.format("CASSANDRA_%s_", prefix.toUpperCase());
-            // visit all the cassandra environment variables, like CASSANDRA_DEFAULT_BASIC_SESSION-NAME
-            ((MapPropertySource) envVars).asMap().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(cassandraPrefix))
-                // convert to property format datastax needs:
-                //     CASSANDRA_DEFAULT_BASIC_SESSION-NAME -> cassandra.default.basic.session-name
-                // and put in configProperties, overriding existing properties (env overrides app config)
-                .forEach(e -> configProperties.put(e.getKey().replace(cassandraPrefix, "")
-                    .toLowerCase().replace("_", "."), e.getValue()));
-        });
+        environment.getPropertySources().stream()
+            .filter(strings -> strings.getName().equals("env"))
+            .findFirst()
+            .ifPresent(envVars -> {
+                // visit all the cassandra environment variables, e.g. CASSANDRA_DEFAULT_BASIC_SESSION-NAME
+                var cassandraPrefix = String.format("CASSANDRA_%s_", prefix.toUpperCase());
+                ((MapPropertySource) envVars).asMap().entrySet().stream()
+                    .filter(entry -> entry.getKey().startsWith(cassandraPrefix))
+                    // convert to property format datastax needs:
+                    //     CASSANDRA_DEFAULT_BASIC_SESSION-NAME -> cassandra.default.basic.session-name
+                    // and put in configProperties, overriding existing properties (env overrides app config)
+                    .forEach(e -> configProperties.put(e.getKey().replace(cassandraPrefix, "")
+                        .toLowerCase().replace("_", "."), e.getValue()));
+            });
 
         // finally, the Datastax java driver is intolerant of Micronaut indexed properties,
         // so translate them from Micronaut array index notation (i.e. foo[0]=bar)
         // to Datastax driver decimal notation (i.e. foo.0=bar)
         // e.g. cassandra.default.basic.contact-points[0] -> cassandra.default.basic.contact-points.1
-        return configProperties.entrySet().stream().collect(
-            Collectors.toMap(e -> e.getKey().replaceAll("\\[(\\d+)]", ".$1"),
-                Map.Entry::getValue));
+        return configProperties.entrySet().stream().collect(Collectors.toMap(e ->
+            e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue));
     }
 
     /**
