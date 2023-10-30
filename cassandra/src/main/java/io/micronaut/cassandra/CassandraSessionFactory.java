@@ -104,7 +104,7 @@ public class CassandraSessionFactory implements AutoCloseable {
         // finally, the Datastax java driver is intolerant of Micronaut indexed properties,
         // so translate them from Micronaut array index notation (i.e. foo[0]=bar)
         // to Datastax driver decimal notation (i.e. foo.0=bar)
-        // e.g. cassandra.default.basic.contact-points[0] -> cassandra.default.basic.contact-points.1
+        // e.g. cassandra.default.basic.contact-points[0] -> cassandra.default.basic.contact-points.0
         return configProperties.entrySet().stream().collect(Collectors.toMap(e ->
             e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue));
     }
