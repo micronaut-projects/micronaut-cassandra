@@ -21,15 +21,13 @@ import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfig
 import com.typesafe.config.ConfigFactory;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.env.Environment;
-import io.micronaut.context.env.MapPropertySource;
-import io.micronaut.core.naming.conventions.StringConvention;
 import io.micronaut.core.value.PropertyResolver;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,6 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author Nirav Assar
  * @author Michael Pollind
+ * @author Dean Wette
  * @since 1.0
  */
 @Factory
@@ -61,52 +60,26 @@ public class CassandraSessionFactory implements AutoCloseable {
      * Creates the {@link CqlSessionBuilder} bean for the given configuration.
      *
      * @param configuration The cassandra configuration bean
-     * @param environment The environment with possibly overriding environment variables
      * @return A {@link CqlSession} bean
      */
     @EachBean(CassandraConfiguration.class)
-    public CqlSessionBuilder session(CassandraConfiguration configuration, Environment environment) {
+    public CqlSessionBuilder session(CassandraConfiguration configuration) {
         try {
             return CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
                 ConfigFactory.invalidateCaches();
-                var dataStaxProperties = dataStaxProperties(configuration.getName(), environment);
-                return ConfigFactory.parseMap(dataStaxProperties).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
+                String prefix = configuration.getName();
+                Map<String, Object> properties = this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix);
+                // translate indexed properties for list values from Micronaut array index notation (i.e. foo[0]=bar)
+                // to Datastax driver decimal notation (i.e. foo.0=bar)
+                properties = properties.entrySet().stream()
+                    .filter(e -> !(e.getValue() instanceof Collection<?>))
+                    .collect((Collectors.toMap(e -> e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue)));
+                return ConfigFactory.parseMap(properties).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));
         } catch (Exception e) {
             LOG.error(String.format("Failed to instantiate CQL session: %s", e.getMessage()), e);
             throw e;
         }
-    }
-
-    /*
-        Cassandra's Datastax java driver is rather intolerant of Micronaut configuration properties,
-        so they need to be dealt with specially to pass to the driver.
-    */
-    private Map<String, Object> dataStaxProperties(String prefix, Environment environment) {
-        final Map<String, Object> configProperties = this.resolver
-            .getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW);
-
-        environment.getPropertySources().stream()
-            .filter(strings -> strings.getName().equals("env"))
-            .findFirst()
-            .ifPresent(envVars -> {
-                // visit all the cassandra environment variables, e.g. CASSANDRA_DEFAULT_BASIC_SESSION-NAME
-                var cassandraPrefix = String.format("CASSANDRA_%s_", prefix.toUpperCase());
-                ((MapPropertySource) envVars).asMap().entrySet().stream()
-                    .filter(entry -> entry.getKey().startsWith(cassandraPrefix))
-                    // convert to property format datastax needs:
-                    //     CASSANDRA_DEFAULT_BASIC_SESSION-NAME -> cassandra.default.basic.session-name
-                    // and put in configProperties, overriding existing properties (env overrides app config)
-                    .forEach(e -> configProperties.put(e.getKey().replace(cassandraPrefix, "")
-                        .toLowerCase().replace("_", "."), e.getValue()));
-            });
-
-        // finally, the Datastax java driver is intolerant of Micronaut indexed properties,
-        // so translate them from Micronaut array index notation (i.e. foo[0]=bar)
-        // to Datastax driver decimal notation (i.e. foo.0=bar)
-        // e.g. cassandra.default.basic.contact-points[0] -> cassandra.default.basic.contact-points.0
-        return configProperties.entrySet().stream().collect(Collectors.toMap(e ->
-            e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue));
     }
 
     /**
