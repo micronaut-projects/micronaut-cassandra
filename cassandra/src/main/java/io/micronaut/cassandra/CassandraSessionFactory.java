@@ -21,13 +21,13 @@ import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfig
 import com.typesafe.config.ConfigFactory;
 import io.micronaut.context.annotation.EachBean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.core.naming.conventions.StringConvention;
 import io.micronaut.core.value.PropertyResolver;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author Nirav Assar
  * @author Michael Pollind
+ * @author Dean Wette
  * @since 1.0
  */
 @Factory
@@ -67,10 +68,11 @@ public class CassandraSessionFactory implements AutoCloseable {
             return CqlSession.builder().withConfigLoader(new DefaultDriverConfigLoader(() -> {
                 ConfigFactory.invalidateCaches();
                 String prefix = configuration.getName();
-                Map<String, Object> properties = this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix, StringConvention.RAW);
+                Map<String, Object> properties = this.resolver.getProperties(CassandraConfiguration.PREFIX + "." + prefix);
                 // translate indexed properties for list values from Micronaut array index notation (i.e. foo[0]=bar)
                 // to Datastax driver decimal notation (i.e. foo.0=bar)
                 properties = properties.entrySet().stream()
+                    .filter(e -> !(e.getValue() instanceof Collection<?>))
                     .collect((Collectors.toMap(e -> e.getKey().replaceAll("\\[(\\d+)]", ".$1"), Map.Entry::getValue)));
                 return ConfigFactory.parseMap(properties).withFallback(ConfigFactory.load().getConfig(DefaultDriverConfigLoader.DEFAULT_ROOT_PATH));
             }));

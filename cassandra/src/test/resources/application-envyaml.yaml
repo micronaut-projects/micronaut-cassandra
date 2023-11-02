@@ -1,0 +1,17 @@
+micronaut:
+  metrics:
+    enabled: true
+configuration: yaml
+cassandra:
+  default:
+    basic:
+      contact-points: ["localhost:${cassandra.port}"]
+      session-name: defaultSession
+      load-balancing-policy:
+        local-datacenter: datacenter1
+    advanced:
+      metrics:
+        factory:
+          class: MicrometerMetricsFactory
+        session:
+          enabled: [connected-nodes, cql-requests]

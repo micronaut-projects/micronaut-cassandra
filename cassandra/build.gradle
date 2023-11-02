@@ -15,4 +15,11 @@ dependencies {
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(mn.micronaut.management)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
+    testImplementation(libs.system.stubs)
+    testRuntimeOnly(mn.snakeyaml)
+}
+
+tasks.withType(Test) {
+    // this is needed by libs.system.stubs
+    jvmArgs = ["--add-opens", "java.base/java.util=ALL-UNNAMED"]
 }

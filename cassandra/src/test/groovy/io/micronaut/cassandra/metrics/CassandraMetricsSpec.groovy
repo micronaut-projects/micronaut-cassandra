@@ -4,12 +4,13 @@ import com.datastax.oss.driver.api.core.CqlSession
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.DefaultApplicationContext
-import io.micronaut.context.env.MapPropertySource
+import io.micronaut.core.value.PropertyResolver
 import io.micronaut.inject.qualifiers.Qualifiers
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
+import spock.lang.Issue
 import spock.lang.Specification
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables
 
 class CassandraMetricsSpec extends Specification {
 
@@ -54,5 +55,42 @@ class CassandraMetricsSpec extends Specification {
         cleanup:
         cassandra.stop()
         applicationContext.close()
+    }
+
+    @Issue("https://github.com/micronaut-projects/micronaut-cassandra/issues/240")
+    void "test metrics with overriding #configStyle with env vars"() {
+        given:
+        CassandraContainer cassandra = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
+        cassandra.start()
+
+        // override: cassandra.default.basic.session-name=defaultSession
+        def env = new EnvironmentVariables(
+                "CASSANDRA_DEFAULT_BASIC_SESSION_NAME", "envSession",
+                "CASSANDRA_PORT", "${cassandra.firstMappedPort}"
+        )
+        env.setup()
+
+        ApplicationContext applicationContext = ApplicationContext.run("env$configStyle")
+
+        when:
+        CqlSession defaultCluster = applicationContext.getBean(CqlSession)
+        PropertyResolver resolver = applicationContext.getBean(PropertyResolver)
+        MeterRegistry meterRegistry = applicationContext.getBean(MeterRegistry)
+
+        then:
+        resolver.getRequiredProperty("configuration", String) == configStyle
+        defaultCluster
+        meterRegistry
+
+        and:
+        meterRegistry.meters.id.name.findAll { it.contains("envSession") } ==~ ['envSession.connected-nodes', 'envSession.cql-requests']
+
+        cleanup:
+        env.teardown()
+        cassandra.stop()
+        applicationContext.close()
+
+        where:
+        configStyle << ['props', 'yaml']
     }
 }

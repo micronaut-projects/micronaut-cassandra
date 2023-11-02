@@ -12,6 +12,7 @@ managed-datastax-cassandra-driver = "4.17.0"
 groovy = "4.0.14"
 spock = "2.3-groovy-4.0"
 testcontainers = "1.19.1"
+system-stubs = "1.2.0"
 
 [libraries]
 # Core
@@ -22,6 +23,7 @@ managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-drive
 managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-metrics-micrometer = { module = "com.datastax.oss:java-driver-metrics-micrometer", version.ref = "managed-datastax-cassandra-driver" }
 
+system-stubs = { module = "uk.org.webcompere:system-stubs-core", version.ref = "system-stubs" }
 testcontainers-cassandra = { module = "org.testcontainers:cassandra", version.ref = "testcontainers" }
 testcontainers-spock = { module = "org.testcontainers:spock", version.ref = "testcontainers" }
 
