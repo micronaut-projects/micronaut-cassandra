@@ -26,6 +26,7 @@ import io.micronaut.context.event.BeanCreatedEvent
 import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.inject.qualifiers.Qualifiers
 import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.utility.DockerImageName
 import spock.lang.Specification
 
 import jakarta.inject.Singleton
@@ -46,7 +47,7 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test single cluster connection"() {
         given:
-        CassandraContainer cassandra = new CassandraContainer()
+        CassandraContainer cassandra = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
         cassandra.start()
         // tag::single[]
         ApplicationContext applicationContext = new DefaultApplicationContext("test")
@@ -81,7 +82,7 @@ class CassandraConfigurationSpec extends Specification {
 
     void "test multiple cluster connections"() {
         given:
-        CassandraContainer cassandra = new CassandraContainer()
+        CassandraContainer cassandra = new CassandraContainer(DockerImageName.parse('cassandra:latest'))
         cassandra.start()
 
         // tag::multiple[]
