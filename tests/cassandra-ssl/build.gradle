@@ -1,0 +1,38 @@
+plugins {
+    id 'groovy'
+    id "io.micronaut.build.internal.cassandra-tests"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute module('io.micronaut.cassandra:micronaut-cassandra') using project(':micronaut-cassandra')
+    }
+}
+
+dependencies {
+    testImplementation project(':micronaut-cassandra')
+    testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("io.micronaut:micronaut-jackson-databind")
+    testImplementation("io.micronaut:micronaut-management")
+    testImplementation("io.micronaut.reactor:micronaut-reactor")
+
+    testImplementation('org.bouncycastle:bcpkix-jdk18on:1.77')
+    testImplementation("org.testcontainers:spock")
+    testImplementation('org.testcontainers:cassandra')
+
+    testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+micronaut {
+    version.set(libs.versions.micronaut.platform.get())
+    runtime("netty")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("example.*")
+    }
+}
