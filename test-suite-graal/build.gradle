@@ -10,7 +10,7 @@ micronaut {
     enableNativeImage false
     processing {
         incremental(true)
-        annotations("helloworld.*")
+        annotations("example.*")
     }
     testResources {
         clientTimeout = 600

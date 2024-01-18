@@ -32,6 +32,6 @@ micronaut {
     testRuntime("spock2")
     processing {
         incremental(true)
-        annotations("com.example.*")
+        annotations("example.*")
     }
 }
