@@ -3,11 +3,13 @@ package example;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Singleton;
 
 import java.util.Optional;
 
 @Singleton
+@Requires(property = "spec.name", value = "CassandraTest")
 public class CassandraRepository {
     private final CqlSession cqlSession;
 

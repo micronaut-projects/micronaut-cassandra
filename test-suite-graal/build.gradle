@@ -3,7 +3,7 @@ plugins {
     id "io.micronaut.build.internal.cassandra-native-tests"
 }
 
-mainClassName = "helloworld.Application"
+mainClassName = "example.Application"
 micronaut {
     importMicronautPlatform = false
     testRuntime "junit5"
@@ -26,7 +26,7 @@ configurations.all {
 dependencies {
     implementation mn.micronaut.context
     implementation mn.micronaut.jackson.databind
-    implementation project(':micronaut-cassandra')
+    implementation projects.micronautCassandra
     implementation mn.snakeyaml
     runtimeOnly mnLogging.logback.classic
 
