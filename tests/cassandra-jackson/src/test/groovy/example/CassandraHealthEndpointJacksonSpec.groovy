@@ -21,8 +21,7 @@ import spock.lang.Specification
 class CassandraHealthEndpointJacksonSpec extends Specification {
 
     @Shared @AutoCleanup CassandraContainer cassandraContainer =
-            (CassandraContainer) (new CassandraContainer(DockerImageName.parse("cassandra:latest")))
-                    .withExposedPorts(9042)
+            new CassandraContainer<>(DockerImageName.parse("cassandra:latest")).withExposedPorts(9042)
 
     def setupSpec() {
         cassandraContainer.start()
