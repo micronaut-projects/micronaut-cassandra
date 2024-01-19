@@ -23,4 +23,5 @@ micronautBuild {
     useStandardizedProjectNames = true
     importMicronautCatalog()
     importMicronautCatalog("micronaut-micrometer")
+    importMicronautCatalog("micronaut-reactor")
 }
