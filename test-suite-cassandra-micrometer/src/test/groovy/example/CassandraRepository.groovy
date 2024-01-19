@@ -20,11 +20,8 @@ class CassandraRepository {
         ResultSet resultSet = cqlSession.execute('select cluster_name, release_version from system.local')
         Row row = resultSet.one()
 
-        if (row != null) {
-            Optional.of(
-                    new CassandraInfo(row.getString('cluster_name'), row.getString('release_version'))
-            )
-        }
-        Optional.empty()
+        row == null
+                ? Optional.empty()
+                : Optional.of(new CassandraInfo(row.getString('cluster_name'), row.getString('release_version')))
     }
 }
