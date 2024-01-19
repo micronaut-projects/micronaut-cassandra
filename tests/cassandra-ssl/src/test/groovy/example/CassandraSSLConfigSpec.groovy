@@ -96,7 +96,6 @@ class CassandraSSLConfigSpec extends Specification {
 
         then:
         response.status() == HttpStatus.OK
-        result
         result.status == HealthStatus.UP
     }
 
