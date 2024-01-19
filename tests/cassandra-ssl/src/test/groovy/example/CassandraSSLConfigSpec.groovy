@@ -38,9 +38,10 @@ class CassandraSSLConfigSpec extends Specification {
     static final Path keyStorePath = Files.createTempFile("cassandra-test-key-store", "pkcs12")
     static final Path trustStorePath = Files.createTempFile("cassandra-test-trust-store", "jks")
 
-    @Shared @AutoCleanup CassandraContainer cassandraContainer =
-            (CassandraContainer) (new CassandraContainer(DockerImageName.parse("cassandra:latest")))
-                    .withExposedPorts(9042)
+    @Shared
+    @AutoCleanup
+    CassandraContainer cassandraContainer = new CassandraContainer<>(DockerImageName.parse("cassandra:latest"))
+            .withExposedPorts(9042)
 
     def setupSpec() {
         setupCert()
