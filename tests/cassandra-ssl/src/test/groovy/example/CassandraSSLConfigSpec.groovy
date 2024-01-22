@@ -69,12 +69,13 @@ class CassandraSSLConfigSpec extends Specification {
     def sslConfig() {
         [
                 // https://docs.datastax.com/en/developer/java-driver/4.17/manual/core/ssl/#driver-configuration
-                'cassandra.default.advanced.advanced.ssl-engine-factory.class'                  : 'DefaultSslEngineFactory',
-                'cassandra.default.advanced.advanced.ssl-engine-factory.trust-store-path'       : "file://${trustStorePath.toString()}",
-                'cassandra.default.advanced.advanced.ssl-engine-factory.trust-store-password'   : '123456',
-                'cassandra.default.advanced.advanced.ssl-engine-factory.keystore-path'          : "file://${keyStorePath.toString()}",
-                'cassandra.default.advanced.advanced.ssl-engine-factory.key-store-password'     : '123456',
-                'cassandra.default.advanced.advanced.ssl-engine-factory.cipher-suites'          : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_256_CBC_SHA" ]
+                'cassandra.default.advanced.ssl-engine-factory.class'                  : 'DefaultSslEngineFactory',
+                'cassandra.default.advanced.ssl-engine-factory.trust-store-path'       : "file://${trustStorePath.toString()}",
+                'cassandra.default.advanced.ssl-engine-factory.trust-store-password'   : '123456',
+                'cassandra.default.advanced.ssl-engine-factory.keystore-path'          : "file://${keyStorePath.toString()}",
+                'cassandra.default.advanced.ssl-engine-factory.key-store-password'     : '123456',
+                'cassandra.default.advanced.ssl-engine-factory.cipher-suites[0]'       : "TLS_RSA_WITH_AES_128_CBC_SHA",
+                'cassandra.default.advanced.ssl-engine-factory.cipher-suites[1]'       : "TLS_RSA_WITH_AES_256_CBC_SHA"
         ]
     }
 
@@ -83,6 +84,7 @@ class CassandraSSLConfigSpec extends Specification {
         EmbeddedServer embeddedServer = ApplicationContext.run(EmbeddedServer,
                 [
                     'spec.name'                                                     : 'CassandraSSLConfigSpec',
+                    'cassandra.default.basic.session-name'                          : 'defaultSession',
                     'cassandra.default.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
                     'cassandra.default.advanced.metadata.schema.enabled'            : false,
                     'cassandra.default.basic.load-balancing-policy.local-datacenter': 'ociCluster'
@@ -106,12 +108,14 @@ class CassandraSSLConfigSpec extends Specification {
                 'test',
                 [
                     'spec.name'                                                     : 'CassandraSSLConfigSpec',
+                    'cassandra.default.basic.session-name'                          : 'defaultSession',
                     'cassandra.default.basic.contact-points'                        : ["localhost:$cassandraContainer.firstMappedPort"],
                     'cassandra.default.advanced.metadata.schema.enabled'            : false,
                     'cassandra.default.basic.load-balancing-policy.local-datacenter': 'ociCluster'
                 ] + sslConfig()
         ))
         applicationContext.start()
+
 
         expect:
         !applicationContext.getBean(CqlSessionBuilderListener).invoked
@@ -126,6 +130,15 @@ class CassandraSSLConfigSpec extends Specification {
         then:
         ((DefaultLoadBalancingPolicy) policies[0]).getLocalDatacenter() == "ociCluster"
         !session.schemaMetadataEnabled
+
+        when:
+        CqlSession defaultCluster = applicationContext.getBean(CqlSession)
+        CassandraRepository repository = applicationContext.getBean(CassandraRepository)
+        def info = repository.getInfo()
+
+        then:
+        defaultCluster
+        info.isPresent()
     }
 
     @Singleton
