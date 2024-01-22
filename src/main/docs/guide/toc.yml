@@ -3,6 +3,7 @@ releaseHistory: Release History
 setup: Setting up Cassandra
 health: Health Checks
 metrics: Micrometer Integration
+ssl: SSL Integration
 additional: Additional Notes
 graalvm: GraalVM support
 repository: Repository
