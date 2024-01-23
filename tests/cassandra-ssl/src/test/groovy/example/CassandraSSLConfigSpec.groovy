@@ -32,6 +32,8 @@ import java.nio.file.Path
 import java.security.KeyStore
 import java.security.cert.Certificate
 
+import static org.testcontainers.utility.MountableFile.forHostPath
+
 @MicronautTest
 class CassandraSSLConfigSpec extends Specification {
 
@@ -46,6 +48,8 @@ class CassandraSSLConfigSpec extends Specification {
     def setupSpec() {
         setupCert()
         cassandraContainer.start()
+        cassandraContainer.copyFileToContainer(forHostPath(keyStorePath), "/etc/ssl/cassandra-test-keystore")
+        cassandraContainer.copyFileToContainer(forHostPath(trustStorePath), "/etc/ssl/cassandra-test-truststore")
     }
 
     def setupCert() {
@@ -70,9 +74,9 @@ class CassandraSSLConfigSpec extends Specification {
         [
                 // https://docs.datastax.com/en/developer/java-driver/4.17/manual/core/ssl/#driver-configuration
                 'cassandra.default.advanced.ssl-engine-factory.class'                  : 'DefaultSslEngineFactory',
-                'cassandra.default.advanced.ssl-engine-factory.trust-store-path'       : "file://${trustStorePath.toString()}",
+                'cassandra.default.advanced.ssl-engine-factory.trust-store-path'       : "file:///etc/ssl/cassandra-test-truststore",
                 'cassandra.default.advanced.ssl-engine-factory.trust-store-password'   : '123456',
-                'cassandra.default.advanced.ssl-engine-factory.keystore-path'          : "file://${keyStorePath.toString()}",
+                'cassandra.default.advanced.ssl-engine-factory.keystore-path'          : "file:///etc/ssl/cassandra-test-keystore",
                 'cassandra.default.advanced.ssl-engine-factory.key-store-password'     : '123456',
                 'cassandra.default.advanced.ssl-engine-factory.cipher-suites[0]'       : "TLS_RSA_WITH_AES_128_CBC_SHA",
                 'cassandra.default.advanced.ssl-engine-factory.cipher-suites[1]'       : "TLS_RSA_WITH_AES_256_CBC_SHA"
