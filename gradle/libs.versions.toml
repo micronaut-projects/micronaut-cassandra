@@ -4,7 +4,7 @@ micronaut-platform = "4.1.4"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.0.2"
 micronaut-logging = "1.1.2"
-micronaut-micrometer = "5.2.0"
+micronaut-micrometer = "5.3.0"
 micronaut-gradle-plugin = "4.2.1"
 
 managed-datastax-cassandra-driver = "4.17.0"
