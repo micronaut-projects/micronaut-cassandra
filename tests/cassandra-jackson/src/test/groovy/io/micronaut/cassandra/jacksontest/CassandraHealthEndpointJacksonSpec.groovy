@@ -1,4 +1,4 @@
-package example
+package io.micronaut.cassandra.jacksontest
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import io.micronaut.cassandra.health.CassandraHealthIndicator

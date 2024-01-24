@@ -1,4 +1,4 @@
-package example;
+package io.micronaut.cassandra.graaltest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

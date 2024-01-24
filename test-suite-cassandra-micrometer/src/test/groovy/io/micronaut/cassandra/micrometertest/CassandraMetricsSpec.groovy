@@ -1,4 +1,4 @@
-package example
+package io.micronaut.cassandra.micrometertest
 
 import com.datastax.oss.driver.api.core.CqlSession
 import io.micrometer.core.instrument.Counter
