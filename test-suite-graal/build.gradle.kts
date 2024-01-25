@@ -1,12 +1,12 @@
 plugins {
-    id "io.micronaut.library"
-    id "io.micronaut.build.internal.cassandra-native-tests"
+    id("io.micronaut.test-resources")
+    id("io.micronaut.build.internal.cassandra-native-tests")
 }
 
 micronaut {
     importMicronautPlatform = false
-    testRuntime "junit5"
-    enableNativeImage false
+    testRuntime("junit5")
+    enableNativeImage(false)
     processing {
         incremental(true)
         annotations("io.micronaut.cassandra.graaltest")
