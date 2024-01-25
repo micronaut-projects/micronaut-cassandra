@@ -44,7 +44,7 @@ class CassandraSSLConfigSpec extends Specification {
     def sslConfig() {
         [
                 // https://docs.datastax.com/en/developer/java-driver/4.17/manual/core/ssl/#driver-configuration
-                'cassandra.default.advanced.ssl-engine-factory.class'               : 'com.datastax.oss.driver.internal.core.ssl.DefaultSslEngineFactory',
+                'cassandra.default.advanced.ssl-engine-factory.class'               : 'DefaultSslEngineFactory',
                 'cassandra.default.advanced.ssl-engine-factory.truststore-path'     : new File(CassandraSSLConfigSpec.getResource("/certs/truststore.shared").file).absolutePath,
                 'cassandra.default.advanced.ssl-engine-factory.truststore-password' : 'cassandra',
                 'cassandra.default.advanced.ssl-engine-factory.hostname-validation' : 'false',
