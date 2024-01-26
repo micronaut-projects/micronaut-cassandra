@@ -54,11 +54,13 @@
                                 
                                 <div class="toc-item" style="margin-left:0"><a href="#metrics"><strong>5</strong><span>Micrometer Integration</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>6</strong><span>Additional Notes</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#ssl"><strong>6</strong><span>SSL Integration</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#additional"><strong>7</strong><span>Additional Notes</span></a></div>
                                 
-                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
+                                <div class="toc-item" style="margin-left:0"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+                                
+                                <div class="toc-item" style="margin-left:0"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
                                 
                             </div>
                         </div>
@@ -99,11 +101,13 @@
         
         <div class="toc-item" style="margin-left:0px" id="toc-item-metrics"><a href="#metrics"><strong>5</strong><span>Micrometer Integration</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>6</strong><span>Additional Notes</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-ssl"><a href="#ssl"><strong>6</strong><span>SSL Integration</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>7</strong><span>GraalVM support</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-additional"><a href="#additional"><strong>7</strong><span>Additional Notes</span></a></div>
         
-        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>8</strong><span>Repository</span></a></div>
+        <div class="toc-item" style="margin-left:0px" id="toc-item-graalvm"><a href="#graalvm"><strong>8</strong><span>GraalVM support</span></a></div>
+        
+        <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>9</strong><span>Repository</span></a></div>
         
         </div>
     </div>
@@ -200,8 +204,18 @@ Configuration values can be supplied a property source such as below. The proper
 Micronaut will create a <a href="https://docs.datastax.com/en/drivers/java/4.4/com/datastax/oss/driver/api/core/CqlSession.html">CqlSession</a> bean. This bean
 can be then injected into any other Micronaut bean.</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Supply Single Configuration</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">cassandra.default.advanced.metadata.schema.enabled=false
+cassandra.default.basic.contact-points[0]=127.0.0.1:9042
+cassandra.default.basic.contact-points[1]=127.0.0.2:8042
+cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
   default:
@@ -217,11 +231,109 @@ can be then injected into any other Micronaut bean.</p>
         local-datacenter: datacenter1</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra]
+  [cassandra.default]
+    [cassandra.default.advanced]
+      [cassandra.default.advanced.metadata]
+        [cassandra.default.advanced.metadata.schema]
+          enabled=false
+    [cassandra.default.basic]
+      contact-points=[
+        "127.0.0.1:9042",
+        "127.0.0.2:8042"
+      ]
+      [cassandra.default.basic.load-balancing-policy]
+        local-datacenter="datacenter1"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">cassandra {
+  'default' {
+    advanced {
+      metadata {
+        schema {
+          enabled = false
+        }
+      }
+    }
+    basic {
+      contactPoints = ["127.0.0.1:9042", "127.0.0.2:8042"]
+      loadBalancingPolicy {
+        localDatacenter = "datacenter1"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  cassandra {
+    default {
+      advanced {
+        metadata {
+          schema {
+            enabled = false
+          }
+        }
+      }
+      basic {
+        contact-points = ["127.0.0.1:9042", "127.0.0.2:8042"]
+        load-balancing-policy {
+          local-datacenter = "datacenter1"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "cassandra": {
+    "default": {
+      "advanced": {
+        "metadata": {
+          "schema": {
+            "enabled": false
+          }
+        }
+      },
+      "basic": {
+        "contact-points": ["127.0.0.1:9042", "127.0.0.2:8042"],
+        "load-balancing-policy": {
+          "local-datacenter": "datacenter1"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
 <p>Multiple Cluster instances can be configured as follows:</p>
 </div>
-<div class="listingblock">
+<div class="openblock">
 <div class="title">Supply Multiple Configuration</div>
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">cassandra.default.advanced.metadata.schema.enabled=false
+cassandra.default.basic.contact-points[0]=127.0.0.1:9042
+cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1
+cassandra.secondary.advanced.metadata.schema.enabled=false
+cassandra.secondary.basic.contact-points[0]=127.0.0.1:9043
+cassandra.secondary.basic.load-balancing-policy.local-datacenter=datacenter2</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
   default:
@@ -244,6 +356,147 @@ can be then injected into any other Micronaut bean.</p>
         - "127.0.0.1:9043"
       load-balancing-policy:
         local-datacenter: datacenter2</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra]
+  [cassandra.default]
+    [cassandra.default.advanced]
+      [cassandra.default.advanced.metadata]
+        [cassandra.default.advanced.metadata.schema]
+          enabled=false
+    [cassandra.default.basic]
+      contact-points=[
+        "127.0.0.1:9042"
+      ]
+      [cassandra.default.basic.load-balancing-policy]
+        local-datacenter="datacenter1"
+  [cassandra.secondary]
+    [cassandra.secondary.advanced]
+      [cassandra.secondary.advanced.metadata]
+        [cassandra.secondary.advanced.metadata.schema]
+          enabled=false
+    [cassandra.secondary.basic]
+      contact-points=[
+        "127.0.0.1:9043"
+      ]
+      [cassandra.secondary.basic.load-balancing-policy]
+        local-datacenter="datacenter2"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">cassandra {
+  'default' {
+    advanced {
+      metadata {
+        schema {
+          enabled = false
+        }
+      }
+    }
+    basic {
+      contactPoints = ["127.0.0.1:9042"]
+      loadBalancingPolicy {
+        localDatacenter = "datacenter1"
+      }
+    }
+  }
+  secondary {
+    advanced {
+      metadata {
+        schema {
+          enabled = false
+        }
+      }
+    }
+    basic {
+      contactPoints = ["127.0.0.1:9043"]
+      loadBalancingPolicy {
+        localDatacenter = "datacenter2"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  cassandra {
+    default {
+      advanced {
+        metadata {
+          schema {
+            enabled = false
+          }
+        }
+      }
+      basic {
+        contact-points = ["127.0.0.1:9042"]
+        load-balancing-policy {
+          local-datacenter = "datacenter1"
+        }
+      }
+    }
+    secondary {
+      advanced {
+        metadata {
+          schema {
+            enabled = false
+          }
+        }
+      }
+      basic {
+        contact-points = ["127.0.0.1:9043"]
+        load-balancing-policy {
+          local-datacenter = "datacenter2"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "cassandra": {
+    "default": {
+      "advanced": {
+        "metadata": {
+          "schema": {
+            "enabled": false
+          }
+        }
+      },
+      "basic": {
+        "contact-points": ["127.0.0.1:9042"],
+        "load-balancing-policy": {
+          "local-datacenter": "datacenter1"
+        }
+      }
+    },
+    "secondary": {
+      "advanced": {
+        "metadata": {
+          "schema": {
+            "enabled": false
+          }
+        }
+      },
+      "basic": {
+        "contact-points": ["127.0.0.1:9043"],
+        "load-balancing-policy": {
+          "local-datacenter": "datacenter2"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 
@@ -626,7 +879,115 @@ cassandra {
 </ul>
 </div>
 
-<h1 id="additional"><a class="anchor" href="#additional"></a>6 Additional Notes</h1>
+<h1 id="ssl"><a class="anchor" href="#ssl"></a>6 SSL Integration</h1>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/ssl.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>The Cassandra DataStax Java Driver includes <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/core/ssl/#driver-configuration">support for SSL</a>, to secure traffic between the driver and Cassandra.</p>
+</div>
+<div class="paragraph">
+<p>This an example of additional configuration for Micronaut Cassandra that enables SSL connections. The relevant values are defined under the <code>cassandra.*.advanced.ssl-engine-factory.*</code> property key and documented further in the <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/">Datastax Configuration Reference</a>.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">cassandra.default.advanced.ssl-engine-factory.class=DefaultSslEngineFactory
+cassandra.default.advanced.ssl-engine-factory.truststore-path=&lt;path to trust store&gt;
+cassandra.default.advanced.ssl-engine-factory.truststore-password=&lt;password&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">cassandra:
+  default:
+    advanced:
+      ssl-engine-factory:
+        class: DefaultSslEngineFactory
+        truststore-path: &lt;path to trust store&gt;
+        truststore-password: &lt;password&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra]
+  [cassandra.default]
+    [cassandra.default.advanced]
+      [cassandra.default.advanced.ssl-engine-factory]
+        class="DefaultSslEngineFactory"
+        truststore-path="&lt;path to trust store&gt;"
+        truststore-password="&lt;password&gt;"</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-groovy-config hljs" data-lang="groovy-config">cassandra {
+  'default' {
+    advanced {
+      sslEngineFactory {
+        'class' = "DefaultSslEngineFactory"
+        truststorePath = "&lt;path to trust store&gt;"
+        truststorePassword = "&lt;password&gt;"
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-hocon hljs" data-lang="hocon">{
+  cassandra {
+    default {
+      advanced {
+        ssl-engine-factory {
+          class = "DefaultSslEngineFactory"
+          truststore-path = "&lt;path to trust store&gt;"
+          truststore-password = "&lt;password&gt;"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json-config hljs" data-lang="json-config">{
+  "cassandra": {
+    "default": {
+      "advanced": {
+        "ssl-engine-factory": {
+          "class": "DefaultSslEngineFactory",
+          "truststore-path": "&lt;path to trust store&gt;",
+          "truststore-password": "&lt;password&gt;"
+        }
+      }
+    }
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>class</code>: The class of the factory. <code>DefaultSslEngineFactory</code> is the default built-in implementation</p>
+</li>
+<li>
+<p><code>truststore</code> properties: these are optional and if not present system property configuration is used instead</p>
+</li>
+</ul>
+</div>
+
+<h1 id="additional"><a class="anchor" href="#additional"></a>7 Additional Notes</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/additional.adoc"'>
@@ -742,7 +1103,7 @@ cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1</code
 <p>Micronaut Framework is very flexible with how application configuration is specified. Configuration properties can be overridden with environment variables. However, the Cassandra Datastax driver is not tolerant and fails fast when it encounters what it considers malformed/illegal configuration properties. Micronaut Cassandra handles this automatically for most cases, but if you want to use environment variables to override <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/">DataStax driver configuration</a> they must be uppercase camelcase, e.g. <code>CASSANDRA_DEFAULT_BASIC_SESSION_NAME</code></p>
 </div>
 
-<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>7 GraalVM support</h1>
+<h1 id="graalvm"><a class="anchor" href="#graalvm"></a>8 GraalVM support</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/graalvm.adoc"'>
@@ -769,7 +1130,7 @@ information.
 </table>
 </div>
 
-<h1 id="repository"><a class="anchor" href="#repository"></a>8 Repository</h1>
+<h1 id="repository"><a class="anchor" href="#repository"></a>9 Repository</h1>
 
 <div class='contribute-btn'>
     <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-cassandra/edit/master/src/main/docs/guide/repository.adoc"'>
