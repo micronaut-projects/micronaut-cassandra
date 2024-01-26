@@ -1,5 +1,5 @@
 plugins {
-    id "io.micronaut.build.internal.cassandra-module"
+    id("io.micronaut.build.internal.cassandra-module")
 }
 
 dependencies {
@@ -19,7 +19,7 @@ dependencies {
     testRuntimeOnly(mn.snakeyaml)
 }
 
-tasks.withType(Test) {
+tasks.withType<Test> {
     // this is needed by libs.system.stubs
-    jvmArgs = ["--add-opens", "java.base/java.util=ALL-UNNAMED"]
+    jvmArgs = listOf("--add-opens", "java.base/java.util=ALL-UNNAMED")
 }

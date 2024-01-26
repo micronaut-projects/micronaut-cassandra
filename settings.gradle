@@ -16,10 +16,12 @@ include 'cassandra'
 include 'cassandra-bom'
 include 'test-suite-graal'
 include 'tests:cassandra-jackson'
+include 'tests:cassandra-ssl'
 include 'test-suite-cassandra-micrometer'
 
 micronautBuild {
     useStandardizedProjectNames = true
     importMicronautCatalog()
     importMicronautCatalog("micronaut-micrometer")
+    importMicronautCatalog("micronaut-reactor")
 }

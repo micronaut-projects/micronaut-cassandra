@@ -1,4 +1,4 @@
-package example;
+package io.micronaut.cassandra.graaltest;
 
 import io.micronaut.core.annotation.Introspected;
 

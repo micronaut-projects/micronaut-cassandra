@@ -1,4 +1,4 @@
-package example
+package io.micronaut.cassandra.micrometertest
 
 import com.datastax.oss.driver.api.core.CqlSession
 import io.micrometer.core.instrument.Counter
@@ -46,7 +46,7 @@ class CassandraMetricsSpec extends Specification {
 
         when:
         CassandraRepository repository = context.getBean(CassandraRepository)
-        repository.getInfo()
+        def info = repository.getInfo()
         Timer cqlRequests0 = meterRegistry.timer("defaultSession.cql-requests")
         Timer cqlRequests1 = meterRegistry.timer("secondarySession.cql-requests")
         Counter bytesSentS0 = meterRegistry.counter("defaultSession.bytes-sent")
@@ -55,6 +55,7 @@ class CassandraMetricsSpec extends Specification {
         Counter bytesReceivedS1 = meterRegistry.counter("secondarySession.bytes-received")
 
         then:
+        info.isPresent()
         cqlRequests0.totalTime(TimeUnit.MILLISECONDS) > 0.0
         cqlRequests1.totalTime(TimeUnit.MILLISECONDS) == 0
         bytesSentS0.count() > 0.0

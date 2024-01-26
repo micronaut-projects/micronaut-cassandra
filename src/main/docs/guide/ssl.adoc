@@ -1,0 +1,18 @@
+The Cassandra DataStax Java Driver includes https://docs.datastax.com/en/developer/java-driver/latest/manual/core/ssl/#driver-configuration[support for SSL], to secure traffic between the driver and Cassandra.
+
+This an example of additional configuration for Micronaut Cassandra that enables SSL connections. The relevant values are defined under the `cassandra.\*.advanced.ssl-engine-factory.*` property key and documented further in the https://docs.datastax.com/en/developer/java-driver/latest/manual/core/configuration/reference/[Datastax Configuration Reference].
+
+[configuration]
+----
+cassandra:
+  default:
+    advanced:
+      ssl-engine-factory:
+        class: DefaultSslEngineFactory
+        truststore-path: <path to trust store>
+        truststore-password: <password>
+----
+
+- `class`: The class of the factory. `DefaultSslEngineFactory` is the default built-in implementation
+- `truststore` properties: these are optional and if not present system property configuration is used instead
+
