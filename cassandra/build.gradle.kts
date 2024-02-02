@@ -11,7 +11,7 @@ dependencies {
     testImplementation(libs.managed.datastax.cassandra.driver.metrics.micrometer)
     testImplementation(mnTest.micronaut.test.spock)
     testImplementation(mn.reactor)
-    testImplementation(libs.testcontainers.spock)
+    testImplementation(platform(mnTestResources.boms.testcontainers))
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(mn.micronaut.management)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
