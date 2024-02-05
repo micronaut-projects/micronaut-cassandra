@@ -11,7 +11,7 @@ dependencies {
     testImplementation(mnReactor.micronaut.reactor)
 
     testImplementation(libs.bcpkix)
-    testImplementation(libs.testcontainers.spock)
+    testImplementation(platform(mnTestResources.boms.testcontainers))
     testImplementation(libs.testcontainers.cassandra)
 
     testRuntimeOnly(mnLogging.logback.classic)
