@@ -6,4 +6,5 @@ metrics: Micrometer Integration
 ssl: SSL Integration
 additional: Additional Notes
 graalvm: GraalVM support
+breaks: Breaking Changes
 repository: Repository

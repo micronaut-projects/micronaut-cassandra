@@ -1,0 +1,6 @@
+This section documents breaking changes between Micronaut Cassandra versions:
+
+=== Micronaut Cassandra 7.0.0
+
+- The Singleton constructor `io.micronaut.cassandra.health.CassandraHealthIndicator(CqlSession)` deprecated previously has been removed.
+`CassandraHealthIndicator(List<CqlSession>)` is used instead.
