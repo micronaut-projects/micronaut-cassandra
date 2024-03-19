@@ -24,11 +24,9 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 import java.net.InetSocketAddress;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,22 +55,10 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator<Map<String
     private final List<CqlSession> cqlSessions;
 
     /**
-     * Default constructor.
-     *
-     * @param cqlSession The cassandra {@link CqlSession} to query for details
-     * @deprecated changed to support multiple configurations (i.e. collections of {@link CqlSession} beans)
-     */
-    @Deprecated(since = "6.1.0", forRemoval = true)
-    public CassandraHealthIndicator(final CqlSession cqlSession) {
-        this.cqlSessions = Collections.singletonList(cqlSession);
-    }
-
-    /**
      * Constructs this health indicator using all configured {@link CqlSession} beans.
      *
      * @param cqlSessions The list of cassandra {@link CqlSession} to query for details
      */
-    @Inject
     public CassandraHealthIndicator(final List<CqlSession> cqlSessions) {
         this.cqlSessions = cqlSessions;
     }
