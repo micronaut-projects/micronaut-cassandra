@@ -14,7 +14,7 @@ managed-datastax-cassandra-driver = "4.17.0"
 groovy = "4.0.14"
 spock = "2.3-groovy-4.0"
 system-stubs = "2.1.6"
-bcpkix = "1.77"
+bcpkix = "1.78.1"
 
 [libraries]
 # Core
