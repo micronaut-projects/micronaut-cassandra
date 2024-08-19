@@ -19,6 +19,7 @@ import io.micronaut.management.health.indicator.HealthResult
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Singleton
+import org.testcontainers.DockerClientFactory
 import org.testcontainers.containers.BindMode
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
@@ -28,6 +29,7 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 @MicronautTest
+@spock.lang.Requires({ DockerClientFactory.instance().isDockerAvailable() })
 class CassandraSSLConfigSpec extends Specification {
 
     @Shared

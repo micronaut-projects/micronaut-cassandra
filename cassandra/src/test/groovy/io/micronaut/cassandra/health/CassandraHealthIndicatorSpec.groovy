@@ -28,15 +28,18 @@ import io.micronaut.health.HealthStatus
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.management.health.indicator.HealthResult
 import jakarta.inject.Singleton
+import org.testcontainers.DockerClientFactory
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
+import spock.lang.Requires
 import spock.lang.Specification
 
 /**
  * @author Ilkin Ashrafli
  * @since 2.2.0
  */
+@Requires({ DockerClientFactory.instance().isDockerAvailable() })
 class CassandraHealthIndicatorSpec extends Specification {
 
     void "test cassandra health indicator"() {

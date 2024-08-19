@@ -30,5 +30,6 @@ managed-datastax-cassandra-driver-metrics-micrometer = { module = "com.datastax.
 bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bcpkix" }
 system-stubs = { module = "uk.org.webcompere:system-stubs-core", version.ref = "system-stubs" }
 testcontainers-cassandra = { module = "org.testcontainers:cassandra" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter"}
 
 gradle-micronaut = { module = "io.micronaut.gradle:micronaut-gradle-plugin", version.ref = "micronaut-gradle-plugin" }

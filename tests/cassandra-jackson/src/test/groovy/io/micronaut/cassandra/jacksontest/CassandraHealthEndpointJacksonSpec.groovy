@@ -16,7 +16,10 @@ import spock.lang.AutoCleanup
 import spock.lang.Issue
 import spock.lang.Shared
 import spock.lang.Specification
+import org.testcontainers.DockerClientFactory
+import spock.lang.Requires
 
+@Requires({ DockerClientFactory.instance().isDockerAvailable() })
 @MicronautTest
 class CassandraHealthEndpointJacksonSpec extends Specification {
 

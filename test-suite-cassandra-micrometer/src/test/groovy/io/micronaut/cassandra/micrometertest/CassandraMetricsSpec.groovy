@@ -10,12 +10,14 @@ import io.micronaut.context.annotation.Property
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Inject
+import spock.lang.Requires
 import spock.lang.Specification
-
+import org.testcontainers.DockerClientFactory
 import java.util.concurrent.TimeUnit
 
 @Property(name = 'spec.name', value = 'CassandraMetricsSpec')
 @MicronautTest
+@Requires({ DockerClientFactory.instance().isDockerAvailable() })
 class CassandraMetricsSpec extends Specification {
 
     @Inject
