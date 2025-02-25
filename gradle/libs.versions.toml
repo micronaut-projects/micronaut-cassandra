@@ -10,7 +10,7 @@ micronaut-test-resources="2.7.3"
 micronaut-gradle-plugin = "4.4.5"
 managed-datastax-cassandra-driver = "4.17.0"
 
-groovy = "4.0.22"
+groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
 system-stubs = "2.1.7"
 bcpkix = "1.80"
