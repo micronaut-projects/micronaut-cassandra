@@ -14,7 +14,7 @@ groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
 system-stubs = "2.1.8"
 bcpkix = "1.80"
-sonatype-scan = "3.0.0"
+sonatype-scan = "3.1.1"
 
 [libraries]
 # Core
