@@ -27,10 +27,12 @@ import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.inject.qualifiers.Qualifiers
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
+import spock.lang.Requires
 import spock.lang.Specification
-
+import org.testcontainers.DockerClientFactory
 import jakarta.inject.Singleton
 
+@Requires({ DockerClientFactory.instance().isDockerAvailable() })
 class CassandraConfigurationSpec extends Specification {
 
     void "test no configuration"() {

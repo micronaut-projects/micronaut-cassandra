@@ -6,12 +6,15 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micronaut.context.ApplicationContext
 import io.micronaut.core.value.PropertyResolver
 import io.micronaut.inject.qualifiers.Qualifiers
+import org.testcontainers.DockerClientFactory
 import org.testcontainers.containers.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import spock.lang.Issue
+import spock.lang.Requires
 import spock.lang.Specification
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables
 
+@Requires({ DockerClientFactory.instance().isDockerAvailable() })
 class CassandraMetricsSpec extends Specification {
 
     void "test Micrometer metrics for cassandra driver"() {

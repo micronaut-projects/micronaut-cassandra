@@ -12,6 +12,7 @@ dependencies {
     testImplementation(mnTest.micronaut.test.spock)
     testImplementation(mn.reactor)
     testImplementation(platform(mnTestResources.boms.testcontainers))
+    testImplementation(mnTestResources.testcontainers.core)
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(mn.micronaut.management)
     testImplementation(mnMicrometer.micronaut.micrometer.core)
