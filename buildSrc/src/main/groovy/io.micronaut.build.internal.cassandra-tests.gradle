@@ -1,4 +1,19 @@
 plugins {
     id "io.micronaut.build.internal.cassandra-base"
     id "io.micronaut.minimal.application"
+    id "java-library"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testRuntimeOnly(mnTest.junit.platform.suite)
+    testRuntimeOnly(mnTest.junit.platform.launcher)
+    testRuntimeOnly(mnTest.junit.jupiter.engine)
+}
+
+test {
+    useJUnitPlatform()
 }
