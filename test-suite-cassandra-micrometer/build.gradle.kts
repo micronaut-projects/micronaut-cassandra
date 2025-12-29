@@ -22,6 +22,7 @@ dependencies {
     testImplementation(mnMicrometer.micronaut.micrometer.core)
     testImplementation(libs.managed.datastax.cassandra.driver.metrics.micrometer)
     testRuntimeOnly(mnLogging.logback.classic)
-    testImplementation(mnTestResources.testcontainers.core)
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers.cassandra)
 }
 

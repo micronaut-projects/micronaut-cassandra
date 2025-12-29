@@ -20,8 +20,9 @@ import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import jakarta.inject.Singleton
 import org.testcontainers.DockerClientFactory
+import org.testcontainers.cassandra.CassandraContainer
 import org.testcontainers.containers.BindMode
-import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
@@ -34,10 +35,11 @@ class CassandraSSLConfigSpec extends Specification {
 
     @Shared
     @AutoCleanup
-    CassandraContainer cassandraContainer = new CassandraContainer<>(DockerImageName.parse("cassandra:latest"))
+    CassandraContainer cassandraContainer = new CassandraContainer(DockerImageName.parse("cassandra:latest"))
             .withClasspathResourceMapping("/certs/keystore.shared", "/opt/cassandra/conf/certs/cassandra.keystore", BindMode.READ_ONLY)
             .withClasspathResourceMapping("/certs/truststore.shared", "/opt/cassandra/conf/certs/cassandra.truststore", BindMode.READ_ONLY)
             .withClasspathResourceMapping("/ssl-cassandra.yaml", "/etc/cassandra/cassandra.yaml", BindMode.READ_ONLY)
+            .waitingFor(Wait.forListeningPort())
 
     def setupSpec() {
         cassandraContainer.start()

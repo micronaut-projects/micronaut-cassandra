@@ -29,7 +29,7 @@ import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.management.health.indicator.HealthResult
 import jakarta.inject.Singleton
 import org.testcontainers.DockerClientFactory
-import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.cassandra.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
 import spock.lang.Requires

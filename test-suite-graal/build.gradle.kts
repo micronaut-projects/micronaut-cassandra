@@ -22,6 +22,8 @@ dependencies {
 
     testRuntimeOnly(mn.snakeyaml)
     testRuntimeOnly(mnLogging.logback.classic)
-    testImplementation(platform(mnTestResources.boms.testcontainers))
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.cassandra)
     testImplementation(libs.testcontainers.junit.jupiter)
 }
