@@ -1,6 +1,5 @@
 plugins {
     groovy
-    id("io.micronaut.test-resources")
     id("io.micronaut.build.internal.cassandra-tests")
 }
 

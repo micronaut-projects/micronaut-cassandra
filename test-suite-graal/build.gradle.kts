@@ -1,5 +1,4 @@
 plugins {
-    id("io.micronaut.test-resources")
     id("io.micronaut.build.internal.cassandra-native-tests")
 }
 
