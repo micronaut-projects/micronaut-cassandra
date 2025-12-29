@@ -11,9 +11,6 @@ micronaut {
         incremental(true)
         annotations("io.micronaut.cassandra.graaltest")
     }
-    testResources {
-        clientTimeout = 600
-    }
 }
 
 dependencies {

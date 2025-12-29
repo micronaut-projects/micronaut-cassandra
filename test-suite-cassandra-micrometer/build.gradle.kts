@@ -12,9 +12,6 @@ micronaut {
         incremental(true)
         annotations("example.*")
     }
-    testResources {
-        clientTimeout = 600
-    }
 }
 
 dependencies {

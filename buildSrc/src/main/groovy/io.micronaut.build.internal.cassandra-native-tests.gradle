@@ -1,7 +1,6 @@
 plugins {
     id "io.micronaut.build.internal.cassandra-base"
     id "io.micronaut.application"
-    id "io.micronaut.test-resources"
     id 'org.graalvm.buildtools.native'
 }
 

@@ -24,5 +24,4 @@ micronautBuild {
     importMicronautCatalog()
     importMicronautCatalog("micronaut-micrometer")
     importMicronautCatalog("micronaut-reactor")
-    importMicronautCatalog("micronaut-test-resources")
 }
