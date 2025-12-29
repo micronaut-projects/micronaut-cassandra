@@ -8,6 +8,12 @@ dependencies {
     compileOnly(mn.micronaut.management)
     compileOnly(mnMicrometer.micronaut.micrometer.core)
 
+    constraints{
+        implementation("com.fasterxml.jackson.core:jackson-core:2.20.1") {
+            because("Older versions has Vulnerability CVE-2022-42003")
+        }
+    }
+
     testImplementation(libs.managed.datastax.cassandra.driver.metrics.micrometer)
     testImplementation(mnTest.micronaut.test.spock)
     testImplementation(mn.reactor)
