@@ -24,5 +24,3 @@ dependencies {
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers.cassandra)
 }
-
-}
