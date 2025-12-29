@@ -25,8 +25,3 @@ micronaut {
         annotations("example.*")
     }
 }
-
-java {
-    sourceCompatibility = JavaVersion.toVersion("21")
-    targetCompatibility = JavaVersion.toVersion("21")
-}

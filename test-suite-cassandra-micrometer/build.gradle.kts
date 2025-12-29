@@ -25,7 +25,4 @@ dependencies {
     testImplementation(libs.testcontainers.cassandra)
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion("21")
-    targetCompatibility = JavaVersion.toVersion("21")
 }
