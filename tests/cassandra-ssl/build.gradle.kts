@@ -13,7 +13,7 @@ dependencies {
     testImplementation(libs.bcpkix)
     testImplementation(platform(mnTest.boms.testcontainers))
     testImplementation(libs.testcontainers.cassandra)
-
+    testImplementation(mnTest.micronaut.test.spock)
     testRuntimeOnly(mnLogging.logback.classic)
 }
 
