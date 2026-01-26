@@ -69,7 +69,7 @@ class CassandraSSLConfigSpec extends Specification {
                 "test")
         HttpClient client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
 
-        def response = client.toBlocking().exchange("/health", CassandraHealthIndicator)
+        def response = client.toBlocking().exchange("/health", Map)
         CassandraHealthIndicator healthIndicator = embeddedServer.getApplicationContext().getBean(CassandraHealthIndicator)
         HealthResult result = Mono.from(healthIndicator.result).block()
 
