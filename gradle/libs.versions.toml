@@ -4,7 +4,6 @@ micronaut-platform = "4.10.7"
 micronaut-reactor = "4.0.0-M1"
 micronaut-micrometer = "5.13.2"
 micronaut-gradle-plugin = "4.6.1"
-micronaut-test = "5.0.0-M3"
 managed-datastax-cassandra-driver = "4.17.0"
 
 system-stubs = "2.1.8"
@@ -15,7 +14,6 @@ bcpkix = "1.81"
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
 micronaut-micrometer = { module = "io.micronaut.micrometer:micronaut-micrometer-bom", version.ref = "micronaut-micrometer" }
 micronaut-reactor = { module = "io.micronaut.reactor:micronaut-reactor-bom", version.ref = "micronaut-reactor" }
-micronaut-test = { module = "io.micronaut.test:micronaut-test-bom", version.ref = "micronaut-test" }
 managed-datastax-cassandra-driver-core = { module = "com.datastax.oss:java-driver-core", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-mapper-processor = { module = "com.datastax.oss:java-driver-mapper-processor", version.ref = "managed-datastax-cassandra-driver" }
 managed-datastax-cassandra-driver-metrics-micrometer = { module = "com.datastax.oss:java-driver-metrics-micrometer", version.ref = "managed-datastax-cassandra-driver" }
