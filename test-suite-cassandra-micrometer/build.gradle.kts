@@ -1,6 +1,5 @@
 plugins {
     groovy
-    id("io.micronaut.test-resources")
     id("io.micronaut.build.internal.cassandra-tests")
 }
 
@@ -12,9 +11,6 @@ micronaut {
         incremental(true)
         annotations("example.*")
     }
-    testResources {
-        clientTimeout = 600
-    }
 }
 
 dependencies {
@@ -25,6 +21,6 @@ dependencies {
     testImplementation(mnMicrometer.micronaut.micrometer.core)
     testImplementation(libs.managed.datastax.cassandra.driver.metrics.micrometer)
     testRuntimeOnly(mnLogging.logback.classic)
-    testImplementation(mnTestResources.testcontainers.core)
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers.cassandra)
 }
-

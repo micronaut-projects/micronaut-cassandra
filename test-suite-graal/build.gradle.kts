@@ -1,5 +1,4 @@
 plugins {
-    id("io.micronaut.test-resources")
     id("io.micronaut.build.internal.cassandra-native-tests")
 }
 
@@ -10,9 +9,6 @@ micronaut {
     processing {
         incremental(true)
         annotations("io.micronaut.cassandra.graaltest")
-    }
-    testResources {
-        clientTimeout = 600
     }
 }
 
@@ -25,6 +21,8 @@ dependencies {
 
     testRuntimeOnly(mn.snakeyaml)
     testRuntimeOnly(mnLogging.logback.classic)
-    testImplementation(platform(mnTestResources.boms.testcontainers))
+    testImplementation(platform(mnTest.boms.testcontainers))
+    testImplementation(libs.testcontainers)
+    testImplementation(libs.testcontainers.cassandra)
     testImplementation(libs.testcontainers.junit.jupiter)
 }

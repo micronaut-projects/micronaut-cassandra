@@ -7,7 +7,7 @@ import io.micronaut.context.ApplicationContext
 import io.micronaut.core.value.PropertyResolver
 import io.micronaut.inject.qualifiers.Qualifiers
 import org.testcontainers.DockerClientFactory
-import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.cassandra.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import spock.lang.Issue
 import spock.lang.Requires

@@ -9,7 +9,7 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.management.health.indicator.HealthResult
 import io.micronaut.runtime.server.EmbeddedServer
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
-import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.cassandra.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import reactor.core.publisher.Mono
 import spock.lang.AutoCleanup
@@ -24,7 +24,7 @@ import spock.lang.Requires
 class CassandraHealthEndpointJacksonSpec extends Specification {
 
     @Shared @AutoCleanup CassandraContainer cassandraContainer =
-            new CassandraContainer<>(DockerImageName.parse("cassandra:latest")).withExposedPorts(9042)
+            new CassandraContainer(DockerImageName.parse("cassandra:latest")).withExposedPorts(9042)
 
     def setupSpec() {
         cassandraContainer.start()
@@ -40,7 +40,7 @@ class CassandraHealthEndpointJacksonSpec extends Specification {
                 'jackson.serialization-inclusion': inclusion], "test")
         HttpClient client = embeddedServer.getApplicationContext().createBean(HttpClient, embeddedServer.getURL())
 
-        def response = client.toBlocking().exchange("/health", CassandraHealthIndicator)
+        def response = client.toBlocking().exchange("/health", HealthResult)
         CassandraHealthIndicator healthIndicator = embeddedServer.getApplicationContext().getBean(CassandraHealthIndicator)
         HealthResult result = Mono.from(healthIndicator.result).block()
 

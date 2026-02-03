@@ -25,7 +25,7 @@ import io.micronaut.context.env.MapPropertySource
 import io.micronaut.context.event.BeanCreatedEvent
 import io.micronaut.context.event.BeanCreatedEventListener
 import io.micronaut.inject.qualifiers.Qualifiers
-import org.testcontainers.containers.CassandraContainer
+import org.testcontainers.cassandra.CassandraContainer
 import org.testcontainers.utility.DockerImageName
 import spock.lang.Requires
 import spock.lang.Specification

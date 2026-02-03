@@ -9,16 +9,21 @@ import io.micronaut.context.BeanContext
 import io.micronaut.context.annotation.Property
 import io.micronaut.inject.qualifiers.Qualifiers
 import io.micronaut.test.extensions.spock.annotation.MicronautTest
+import io.micronaut.test.support.TestPropertyProvider
 import jakarta.inject.Inject
-import spock.lang.Requires
+import org.junit.jupiter.api.TestInstance
 import spock.lang.Specification
-import org.testcontainers.DockerClientFactory
 import java.util.concurrent.TimeUnit
 
 @Property(name = 'spec.name', value = 'CassandraMetricsSpec')
 @MicronautTest
-@Requires({ DockerClientFactory.instance().isDockerAvailable() })
-class CassandraMetricsSpec extends Specification {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class CassandraMetricsSpec extends Specification implements TestPropertyProvider{
+
+    @Override
+    Map<String, String> getProperties() {
+        return Cassandra.getProperties()
+    }
 
     @Inject
     BeanContext context
