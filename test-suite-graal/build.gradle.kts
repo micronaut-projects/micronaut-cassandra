@@ -26,10 +26,3 @@ dependencies {
     testImplementation(libs.testcontainers.cassandra)
     testImplementation(libs.testcontainers.junit.jupiter)
 }
-
-graalvmNative {
-    binaries.all {
-        buildArgs.add("--initialize-at-build-time=com.datastax.oss.driver.shaded.guava.common.primitives.UnsignedBytes\$LexicographicalComparatorHolder\$PureJavaComparator")
-    }
-}
-
