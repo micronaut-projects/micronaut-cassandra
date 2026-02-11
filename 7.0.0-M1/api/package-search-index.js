@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"io.micronaut.cassandra"},{"l":"io.micronaut.cassandra.health"},{"l":"io.micronaut.cassandra.info"},{"l":"io.micronaut.cassandra.metrics"}];updateSearchResults();
