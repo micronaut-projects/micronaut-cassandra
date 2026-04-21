@@ -8,7 +8,7 @@ micronaut-gradle-plugin = "4.6.2"
 managed-datastax-cassandra-driver = "4.17.0"
 
 system-stubs = "2.1.8"
-bcpkix = "1.81"
+bcpkix = "1.84"
 
 [libraries]
 # Core
