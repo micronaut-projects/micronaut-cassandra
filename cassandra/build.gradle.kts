@@ -9,7 +9,7 @@ dependencies {
     compileOnly(mnMicrometer.micronaut.micrometer.core)
 
     constraints{
-        implementation("com.fasterxml.jackson.core:jackson-core:2.20.1") {
+        implementation("com.fasterxml.jackson.core:jackson-core:2.21.2") {
             because("Older versions has Vulnerability CVE-2022-42003")
         }
     }
