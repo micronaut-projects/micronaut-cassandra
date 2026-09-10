@@ -1,9 +1,9 @@
 [versions]
-micronaut = "5.1.6"
+micronaut = "5.2.0"
 micronaut-test = "5.0.0"
-micronaut-platform = "5.0.5"
-micronaut-reactor = "4.1.0"
-micronaut-micrometer = "6.0.1"
+micronaut-platform = "5.1.4"
+micronaut-reactor = "4.2.0"
+micronaut-micrometer = "6.0.2"
 micronaut-gradle-plugin = "5.0.2"
 managed-datastax-cassandra-driver = "4.17.0"
 
