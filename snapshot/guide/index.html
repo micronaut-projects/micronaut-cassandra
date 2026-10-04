@@ -202,6 +202,15 @@
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.cassandra:micronaut-cassandra"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -240,7 +249,14 @@ cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1</code
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">cassandra = {default = {advanced = {metadata = {schema = {enabled = false}}}, basic = {contact-points = ["127.0.0.1:9042", "127.0.0.2:8042"], load-balancing-policy = {local-datacenter = "datacenter1"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra.default.advanced.metadata.schema]
+enabled = false
+
+[cassandra.default.basic]
+contact-points = ["127.0.0.1:9042", "127.0.0.2:8042"]
+
+[cassandra.default.basic.load-balancing-policy]
+local-datacenter = "datacenter1"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -355,7 +371,23 @@ cassandra.secondary.basic.load-balancing-policy.local-datacenter=datacenter2</co
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">cassandra = {default = {advanced = {metadata = {schema = {enabled = false}}}, basic = {contact-points = ["127.0.0.1:9042"], load-balancing-policy = {local-datacenter = "datacenter1"}}}, secondary = {advanced = {metadata = {schema = {enabled = false}}}, basic = {contact-points = ["127.0.0.1:9043"], load-balancing-policy = {local-datacenter = "datacenter2"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra.default.advanced.metadata.schema]
+enabled = false
+
+[cassandra.default.basic]
+contact-points = ["127.0.0.1:9042"]
+
+[cassandra.default.basic.load-balancing-policy]
+local-datacenter = "datacenter1"
+
+[cassandra.secondary.advanced.metadata.schema]
+enabled = false
+
+[cassandra.secondary.basic]
+contact-points = ["127.0.0.1:9043"]
+
+[cassandra.secondary.basic.load-balancing-policy]
+local-datacenter = "datacenter2"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -641,6 +673,15 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
 &lt;/dependency&gt;</code></pre>
 </div>
 </div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"io.micronaut.micrometer:micronaut-micrometer-core"</span>,
+]</code></pre>
+</div>
+</div>
 </p>
 </div>
 <div class="paragraph">
@@ -659,6 +700,15 @@ To disable the Cassandra health indicator entirely, add <code>endpoints.health.c
     &lt;groupId&gt;com.datastax.oss&lt;/groupId&gt;
     &lt;artifactId&gt;java-driver-metrics-micrometer&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="listingblock multi-language-sample">
+<div class="title"></div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="pyronaut">[tool.pyronaut.dependencies]
+runtime = [
+    <span class="hljs-string">"com.datastax.oss:java-driver-metrics-micrometer"</span>,
+]</code></pre>
 </div>
 </div>
 </p>
@@ -710,8 +760,23 @@ cassandra:
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">micronaut = {metrics = {enabled = true}}
-cassandra = {default = {basic = {contact-points = ["127.0.0.1:${cassandra.port}"], load-balancing-policy = {local-datacenter = "datacenter1"}}, advanced = {metrics = {factory = {class = "MicrometerMetricsFactory"}, session = {enabled = ["connected-nodes", "cql-requests", "bytes-sent", "bytes-received"]}, node = {enabled = ["cql-requests"]}}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[micronaut.metrics]
+enabled = true
+
+[cassandra.default.basic]
+contact-points = ["127.0.0.1:${cassandra.port}"]
+
+[cassandra.default.basic.load-balancing-policy]
+local-datacenter = "datacenter1"
+
+[cassandra.default.advanced.metrics.factory]
+class = "MicrometerMetricsFactory"
+
+[cassandra.default.advanced.metrics.session]
+enabled = ["connected-nodes", "cql-requests", "bytes-sent", "bytes-received"]
+
+[cassandra.default.advanced.metrics.node]
+enabled = ["cql-requests"]</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -867,7 +932,10 @@ cassandra.default.advanced.ssl-engine-factory.truststore-password=&lt;password&g
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">cassandra = {default = {advanced = {ssl-engine-factory = {class = "DefaultSslEngineFactory", truststore-path = "&lt;path to trust store&gt;", truststore-password = "&lt;password&gt;"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra.default.advanced.ssl-engine-factory]
+class = "DefaultSslEngineFactory"
+truststore-path = "&lt;path to trust store&gt;"
+truststore-password = "&lt;password&gt;"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
@@ -985,7 +1053,11 @@ cassandra.default.basic.load-balancing-policy.local-datacenter=datacenter1</code
 </div>
 <div class="listingblock multi-language-sample">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">cassandra = {default = {basic = {contact-points = ["127.0.0.1:9042", "5.6.7.8:9042"], load-balancing-policy = {local-datacenter = "datacenter1"}}}}</code></pre>
+<pre class="highlightjs highlight"><code class="language-toml hljs" data-lang="toml">[cassandra.default.basic]
+contact-points = ["127.0.0.1:9042", "5.6.7.8:9042"]
+
+[cassandra.default.basic.load-balancing-policy]
+local-datacenter = "datacenter1"</code></pre>
 </div>
 </div>
 <div class="listingblock multi-language-sample">
