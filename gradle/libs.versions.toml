@@ -1,7 +1,7 @@
 [versions]
-micronaut = "5.2.15"
+micronaut = "5.2.20"
 micronaut-test = "5.0.0"
-micronaut-platform = "5.2.2"
+micronaut-platform = "5.2.3"
 micronaut-reactor = "4.3.0"
 micronaut-micrometer = "6.1.0"
 micronaut-gradle-plugin = "5.0.2"
