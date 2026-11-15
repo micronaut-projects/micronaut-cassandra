@@ -1,14 +1,14 @@
 [versions]
-micronaut = "5.2.22"
+micronaut = "5.2.23"
 micronaut-test = "5.0.0"
-micronaut-platform = "5.2.5"
+micronaut-platform = "5.2.6"
 micronaut-reactor = "4.3.0"
 micronaut-micrometer = "6.1.2"
 micronaut-gradle-plugin = "5.0.2"
 managed-datastax-cassandra-driver = "4.17.0"
 
 system-stubs = "2.1.8"
-bcpkix = "1.86"
+bcpkix = "1.87"
 
 [libraries]
 # Core
